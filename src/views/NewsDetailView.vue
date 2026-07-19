@@ -44,7 +44,7 @@ watch(() => route.params.slug, (newSlug) => {
 
 <template>
   <div class="w-full h-full overflow-y-auto custom-scrollbar">
-    <div class="w-full max-w-4xl mx-auto flex flex-col pt-32 px-8 pb-32">
+    <div class="w-full max-w-2xl mx-auto flex flex-col pt-32 px-8 pb-40">
       <div v-if="loading" class="flex-1 flex items-center justify-center h-64">
         <span class="text-sm tracking-widest text-gray-400 animate-pulse uppercase">Loading...</span>
       </div>

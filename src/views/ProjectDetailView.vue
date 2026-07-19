@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { getProjectBySlug } from '@/api/services'
 import emblaCarouselVue from 'embla-carousel-vue'
+import Autoplay from 'embla-carousel-autoplay'
 import { useSEO } from '@/composables/useSEO'
 
 const route = useRoute()
@@ -16,7 +17,9 @@ useSEO(() => ({
 
 const loading = ref(true)
 
-const [emblaRef, emblaApi] = emblaCarouselVue({ loop: true })
+const [emblaRef, emblaApi] = emblaCarouselVue({ loop: true, duration: 40 }, [
+  Autoplay({ delay: 5000, stopOnInteraction: false })
+])
 const scrollPrev = () => emblaApi.value?.scrollPrev()
 const scrollNext = () => emblaApi.value?.scrollNext()
 
@@ -55,7 +58,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="w-full max-w-4xl mx-auto flex flex-col pt-32 px-8 pb-24">
+  <div class="w-full max-w-2xl mx-auto flex flex-col pt-32 px-8 pb-40">
     <div v-if="loading" class="flex-1 flex items-center justify-center h-64">
       <span class="text-sm tracking-widest text-gray-400 animate-pulse uppercase">Loading...</span>
     </div>
@@ -87,21 +90,23 @@ onMounted(async () => {
           </div>
         </div>
         
-        <!-- Navigation Buttons -->
-        <button 
-          @click="scrollPrev"
-          v-if="allImages.length > 1"
-          class="absolute top-1/2 left-4 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 w-10 h-10 flex items-center justify-center bg-white/80 hover:bg-white text-gray-800 rounded-full shadow-lg backdrop-blur-sm"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-        </button>
-        <button 
-          @click="scrollNext"
-          v-if="allImages.length > 1"
-          class="absolute top-1/2 right-4 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 w-10 h-10 flex items-center justify-center bg-white/80 hover:bg-white text-gray-800 rounded-full shadow-lg backdrop-blur-sm"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-        </button>
+        <!-- Prev Zone -->
+        <div v-if="allImages.length > 1" class="absolute left-0 top-0 bottom-0 w-1/3 flex items-center justify-start pl-4 z-10 cursor-pointer group/prev" @click="scrollPrev">
+          <button class="text-white opacity-0 group-hover/prev:opacity-100 hover:scale-110 transition-all duration-300 drop-shadow-md" aria-label="Previous">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 md:w-12 md:h-12">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+          </button>
+        </div>
+        
+        <!-- Next Zone -->
+        <div v-if="allImages.length > 1" class="absolute right-0 top-0 bottom-0 w-1/3 flex items-center justify-end pr-4 z-10 cursor-pointer group/next" @click="scrollNext">
+          <button class="text-white opacity-0 group-hover/next:opacity-100 hover:scale-110 transition-all duration-300 drop-shadow-md" aria-label="Next">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 md:w-12 md:h-12">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <div class="prose prose-sm max-w-none mb-12 font-light text-gray-600 leading-relaxed" v-html="project.description"></div>
