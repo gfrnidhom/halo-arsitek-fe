@@ -57,7 +57,7 @@ useIntersectionObserver(
 
 <template>
   <div class="w-full h-full overflow-y-auto custom-scrollbar">
-    <div class="w-full max-w-5xl lg:max-w-6xl mx-auto flex flex-col pt-32 px-8 pb-40">
+    <div class="w-full max-w-4xl mx-auto flex flex-col pt-32 px-8 pb-40">
       <h1 class="text-sm tracking-[0.2em] uppercase text-gray-400 mb-12">News & Insights</h1>
       
       <!-- Loading State (Initial Shimmer) -->

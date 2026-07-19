@@ -71,7 +71,7 @@ const filteredProjects = computed(() => {
 </script>
 
 <template>
-  <div class="w-full max-w-5xl mx-auto h-full flex flex-col pt-16 px-8">
+  <div class="w-full max-w-4xl mx-auto h-full flex flex-col pt-16 px-8">
     <!-- Category Filter -->
     <div class="sticky top-0 z-40 bg-[#f3f3f3]/90 backdrop-blur-md py-6 mb-6 flex space-x-6 justify-center rounded-b-2xl">
       <button 
