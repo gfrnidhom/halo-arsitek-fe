@@ -71,11 +71,11 @@ const closeMobileMenu = () => {
     </Transition>
 
     <!-- Bottom Left Navigation (Hidden on Home/Landing & Mobile) -->
-    <nav v-if="route.path !== '/'" class="hidden md:flex fixed bottom-8 left-8 z-50 flex-col space-y-3 text-gray-900">
-      <RouterLink to="/projects" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-wider">Projects</RouterLink>
-      <RouterLink to="/about" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-wider">About</RouterLink>
-      <RouterLink to="/news" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-wider">News</RouterLink>
-      <RouterLink to="/contact" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-wider">Contact</RouterLink>
+    <nav v-if="route.path !== '/'" class="hidden md:flex fixed bottom-8 left-8 z-50 flex-row space-x-8 items-center text-gray-900">
+      <RouterLink to="/projects" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-widest">Projects</RouterLink>
+      <RouterLink to="/about" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-widest">About</RouterLink>
+      <RouterLink to="/news" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-widest">News</RouterLink>
+      <RouterLink to="/contact" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-widest">Contact</RouterLink>
     </nav>
 
     <!-- Main Content Area -->
@@ -88,12 +88,12 @@ const closeMobileMenu = () => {
     </main>
 
     <!-- Bottom Right Copyright & Socials (Footer) (Hidden on Mobile) -->
-    <footer :class="['hidden md:flex fixed bottom-8 right-8 z-50 flex-col items-end space-y-2 text-xs transition-colors duration-500', route.path === '/' ? 'text-white drop-shadow-md opacity-90' : 'text-gray-900 opacity-70']">
+    <footer :class="['hidden md:flex fixed bottom-8 right-8 z-50 flex-row items-center space-x-8 text-xs transition-colors duration-500', route.path === '/' ? 'text-white drop-shadow-md opacity-90' : 'text-gray-900 opacity-70']">
       <div v-if="settings?.social_media" class="flex space-x-4">
-        <a v-if="settings.social_media.instagram" :href="settings.social_media.instagram" target="_blank" class="hover:opacity-100 transition-opacity uppercase tracking-wider">Instagram</a>
-        <a v-if="settings.social_media.facebook" :href="settings.social_media.facebook" target="_blank" class="hover:opacity-100 transition-opacity uppercase tracking-wider">Facebook</a>
+        <a v-if="settings.social_media.instagram" :href="settings.social_media.instagram" target="_blank" class="hover:opacity-100 transition-opacity uppercase tracking-widest">Instagram</a>
+        <a v-if="settings.social_media.facebook" :href="settings.social_media.facebook" target="_blank" class="hover:opacity-100 transition-opacity uppercase tracking-widest">Facebook</a>
       </div>
-      <p>&copy; {{ new Date().getFullYear() }}. {{ settings?.site_name || 'Halo Arsitek' }}</p>
+      <p class="uppercase tracking-widest">&copy; {{ new Date().getFullYear() }}. {{ settings?.site_name || 'Halo Arsitek' }}</p>
     </footer>
 
     <!-- Mobile Minimal Copyright -->
