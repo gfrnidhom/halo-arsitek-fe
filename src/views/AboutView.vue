@@ -1,20 +1,22 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { getTeam, getServices, getTestimonials } from '@/api/services'
+import { getTeam, getServices, getTestimonials, getSettings } from '@/api/services'
 
 const team = ref<any[]>([])
 const services = ref<any[]>([])
 const testimonials = ref<any[]>([])
+const settings = ref<any>(null)
 const loading = ref(true)
 
 onMounted(async () => {
   try {
-    const [teamRes, servicesRes, testiRes] = await Promise.all([
-      getTeam(), getServices(), getTestimonials()
+    const [teamRes, servicesRes, testiRes, settingsRes] = await Promise.all([
+      getTeam(), getServices(), getTestimonials(), getSettings()
     ])
     if (teamRes.data?.success) team.value = teamRes.data.data
     if (servicesRes.data?.success) services.value = servicesRes.data.data
     if (testiRes.data?.success) testimonials.value = testiRes.data.data
+    if (settingsRes.data?.success) settings.value = settingsRes.data.data
   } catch (error) {
     console.error('Error fetching about data', error)
   } finally {
@@ -30,11 +32,10 @@ onMounted(async () => {
     </div>
     
     <template v-else>
-      <!-- Philosophy / Intro -->
       <section class="max-w-2xl">
         <h1 class="text-sm tracking-[0.2em] uppercase text-gray-400 mb-8">About Us</h1>
         <p class="text-2xl font-light leading-relaxed text-gray-800">
-          We believe architecture is more than just space. It is the silent language of form, light, and context merging to create harmony in human experience.
+          {{ settings?.about_description || 'We believe architecture is more than just space. It is the silent language of form, light, and context merging to create harmony in human experience.' }}
         </p>
       </section>
 
@@ -56,14 +57,14 @@ onMounted(async () => {
           <div v-for="member in team" :key="member.id" class="flex flex-col">
             <div class="aspect-[3/4] bg-gray-200 mb-4 overflow-hidden rounded-xl">
               <img 
-                :src="member.photo_url" 
+                :src="member.image" 
                 :alt="member.name"
                 class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
-                onerror="this.src='https://placehold.co/400x533/eeeeee/999999?text=Team'"
+                onerror="this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face'"
               />
             </div>
             <h3 class="text-sm font-medium">{{ member.name }}</h3>
-            <p class="text-xs text-gray-400">{{ member.position }}</p>
+            <p class="text-xs text-gray-400">{{ member.role }}</p>
           </div>
         </div>
       </section>
@@ -73,10 +74,10 @@ onMounted(async () => {
         <h2 class="text-sm tracking-[0.2em] uppercase text-gray-400 mb-8">Testimonials</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
           <div v-for="testi in testimonials" :key="testi.id" class="flex flex-col space-y-4">
-            <p class="italic text-sm text-gray-600 leading-relaxed">"{{ testi.content }}"</p>
+            <p class="italic text-sm text-gray-600 leading-relaxed">"{{ testi.quote }}"</p>
             <div>
               <p class="text-xs font-medium">{{ testi.name }}</p>
-              <p class="text-xs text-gray-400">{{ testi.position }}</p>
+              <p class="text-xs text-gray-400">{{ testi.role }}</p>
             </div>
           </div>
         </div>

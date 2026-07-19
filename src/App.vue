@@ -22,7 +22,7 @@ onMounted(async () => {
   <div class="min-h-screen bg-[#f3f3f3] relative overflow-hidden font-sans text-gray-800 flex flex-col">
     <!-- Top Left Logo / Head Title -->
     <header class="absolute top-8 left-8 z-50 mix-blend-difference text-white">
-      <RouterLink to="/" class="text-sm font-normal tracking-[0.2em] uppercase hover:opacity-70 transition-opacity">
+      <RouterLink to="/home" class="text-sm font-normal tracking-[0.2em] uppercase hover:opacity-70 transition-opacity">
         {{ settings?.site_name || 'DHANIĒ SAL' }}
       </RouterLink>
     </header>

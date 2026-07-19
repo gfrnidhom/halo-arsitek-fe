@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { submitContactForm } from '@/api/services'
+import { ref, onMounted } from 'vue'
+import { submitContactForm, getSettings } from '@/api/services'
 
+const settings = ref<any>(null)
 const form = ref({
   name: '',
   email: '',
@@ -10,6 +11,17 @@ const form = ref({
 const loading = ref(false)
 const successMsg = ref('')
 const errorMsg = ref('')
+
+onMounted(async () => {
+  try {
+    const res = await getSettings()
+    if (res.data?.success) {
+      settings.value = res.data.data
+    }
+  } catch (error) {
+    console.error('Error fetching settings', error)
+  }
+})
 
 const submit = async () => {
   loading.value = true
@@ -32,61 +44,88 @@ const submit = async () => {
 </script>
 
 <template>
-  <div class="w-full max-w-2xl mx-auto flex flex-col pt-32 px-8 pb-24">
-    <h1 class="text-sm tracking-[0.2em] uppercase text-gray-400 mb-12">Get in touch</h1>
-    
-    <div class="mb-12">
-      <p class="text-lg font-light leading-relaxed text-gray-800">
-        We would love to hear about your next project. Reach out to us to schedule a consultation.
-      </p>
-    </div>
-
-    <form @submit.prevent="submit" class="flex flex-col space-y-8">
-      <div class="flex flex-col space-y-2">
-        <label for="name" class="text-xs tracking-widest uppercase text-gray-400">Name</label>
-        <input 
-          id="name" 
-          v-model="form.name" 
-          type="text" 
-          required
-          class="border-b border-gray-300 bg-transparent py-2 focus:outline-none focus:border-gray-900 transition-colors text-sm"
-        />
-      </div>
+  <div class="w-full h-[100dvh] flex items-center justify-center px-12 md:px-24 xl:px-32 relative overflow-hidden">
+    <div class="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
       
-      <div class="flex flex-col space-y-2">
-        <label for="email" class="text-xs tracking-widest uppercase text-gray-400">Email</label>
-        <input 
-          id="email" 
-          v-model="form.email" 
-          type="email" 
-          required
-          class="border-b border-gray-300 bg-transparent py-2 focus:outline-none focus:border-gray-900 transition-colors text-sm"
-        />
+      <!-- Left Column: Details + Image -->
+      <div class="flex flex-col space-y-16">
+        
+        <!-- Text details grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-xs text-gray-600 leading-loose">
+          
+          <!-- Address -->
+          <div class="col-span-1">
+            <p v-html="settings?.contact_address?.split(', ').join('<br>')"></p>
+          </div>
+          
+          <!-- Email & Phone -->
+          <div class="col-span-1 flex flex-col space-y-1">
+            <div class="flex"><span class="w-16 text-gray-400">E-mail</span> <a :href="`mailto:${settings?.contact_email}`" class="hover:text-black transition-colors">{{ settings?.contact_email }}</a></div>
+            <div class="flex"><span class="w-16 text-gray-400">Phone</span> <a :href="`tel:${settings?.contact_phone}`" class="hover:text-black transition-colors">{{ settings?.contact_phone }}</a></div>
+          </div>
+          
+          <!-- Social -->
+          <div class="col-span-1 flex flex-col space-y-1">
+            <div class="flex"><span class="w-20 text-gray-400">Instagram</span> <a :href="settings?.social_instagram" target="_blank" class="hover:text-black transition-colors">haloarsitek</a></div>
+          </div>
+          
+        </div>
+
+        <!-- Image -->
+        <div class="w-full aspect-[4/3] bg-[#f3f3f3] overflow-hidden">
+          <img src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover grayscale opacity-80" />
+        </div>
       </div>
 
-      <div class="flex flex-col space-y-2">
-        <label for="message" class="text-xs tracking-widest uppercase text-gray-400">Message</label>
-        <textarea 
-          id="message" 
-          v-model="form.message" 
-          required
-          rows="4"
-          class="border-b border-gray-300 bg-transparent py-2 focus:outline-none focus:border-gray-900 transition-colors text-sm resize-none"
-        ></textarea>
+      <!-- Right Column: Form -->
+      <div class="flex flex-col">
+        <form @submit.prevent="submit" class="flex flex-col space-y-10">
+          
+          <div class="flex flex-col border-b border-gray-300">
+            <input 
+              v-model="form.name" 
+              type="text" 
+              placeholder="Name"
+              required
+              class="w-full bg-transparent py-3 px-0 text-sm font-light focus:outline-none placeholder-gray-400 transition-colors"
+            />
+          </div>
+          
+          <div class="flex flex-col border-b border-gray-300">
+            <input 
+              v-model="form.email" 
+              type="email" 
+              placeholder="E-mail"
+              required
+              class="w-full bg-transparent py-3 px-0 text-sm font-light focus:outline-none placeholder-gray-400 transition-colors"
+            />
+          </div>
+          
+          <div class="flex flex-col border-b border-gray-300">
+            <textarea 
+              v-model="form.message" 
+              placeholder="Message"
+              required
+              rows="4"
+              class="w-full bg-transparent py-3 px-0 text-sm font-light focus:outline-none placeholder-gray-400 resize-none transition-colors"
+            ></textarea>
+          </div>
+          
+          <div class="pt-4 flex flex-col items-start">
+            <button 
+              type="submit" 
+              :disabled="loading"
+              class="text-xs uppercase tracking-[0.2em] border-b border-black pb-1 hover:opacity-50 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              {{ loading ? 'Sending...' : 'Send Message' }}
+            </button>
+            <p v-if="successMsg" class="text-xs text-green-600 mt-4">{{ successMsg }}</p>
+            <p v-if="errorMsg" class="text-xs text-red-600 mt-4">{{ errorMsg }}</p>
+          </div>
+
+        </form>
       </div>
 
-      <div class="pt-4">
-        <button 
-          type="submit" 
-          :disabled="loading"
-          class="text-xs tracking-[0.2em] uppercase border border-gray-900 px-8 py-3 hover:bg-gray-900 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {{ loading ? 'Sending...' : 'Send Message' }}
-        </button>
-      </div>
-
-      <p v-if="successMsg" class="text-sm text-green-600 mt-4">{{ successMsg }}</p>
-      <p v-if="errorMsg" class="text-sm text-red-600 mt-4">{{ errorMsg }}</p>
-    </form>
+    </div>
   </div>
 </template>
