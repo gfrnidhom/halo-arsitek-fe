@@ -50,14 +50,14 @@ const submit = async () => {
 </script>
 
 <template>
-  <div class="w-full h-[100dvh] flex items-center justify-center px-12 md:px-24 xl:px-32 relative overflow-hidden">
-    <div class="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+  <div class="w-full min-h-[100dvh] flex flex-col justify-center px-6 md:px-12 lg:px-24 xl:px-32 py-24 md:py-12 relative">
+    <div class="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center mt-12 md:mt-0">
       
       <!-- Left Column: Details + Image -->
-      <div class="flex flex-col space-y-16">
+      <div class="flex flex-col space-y-8 md:space-y-16">
         
         <!-- Text details grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-xs text-gray-600 leading-loose">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 text-sm text-gray-600 leading-relaxed">
           
           <!-- Address -->
           <div class="col-span-1">
@@ -65,20 +65,20 @@ const submit = async () => {
           </div>
           
           <!-- Email & Phone -->
-          <div class="col-span-1 flex flex-col space-y-1">
-            <div class="flex"><span class="w-16 text-gray-400">E-mail</span> <a :href="`mailto:${settings?.contact_email}`" class="hover:text-black transition-colors">{{ settings?.contact_email }}</a></div>
-            <div class="flex"><span class="w-16 text-gray-400">Phone</span> <a :href="`tel:${settings?.contact_phone}`" class="hover:text-black transition-colors">{{ settings?.contact_phone }}</a></div>
+          <div class="col-span-1 flex flex-col space-y-2">
+            <div class="flex"><span class="w-20 text-gray-400">E-mail</span> <a :href="`mailto:${settings?.contact_email}`" class="hover:text-black transition-colors">{{ settings?.contact_email }}</a></div>
+            <div class="flex"><span class="w-20 text-gray-400">Phone</span> <a :href="`tel:${settings?.contact_phone}`" class="hover:text-black transition-colors">{{ settings?.contact_phone }}</a></div>
           </div>
           
           <!-- Social -->
-          <div class="col-span-1 flex flex-col space-y-1">
+          <div class="col-span-1 flex flex-col space-y-2">
             <div class="flex"><span class="w-20 text-gray-400">Instagram</span> <a :href="settings?.social_instagram" target="_blank" class="hover:text-black transition-colors">haloarsitek</a></div>
           </div>
           
         </div>
 
         <!-- Image -->
-        <div class="w-full aspect-[4/3] bg-[#f3f3f3] overflow-hidden">
+        <div class="w-full max-w-lg aspect-[16/9] bg-[#f3f3f3] overflow-hidden rounded-md">
           <img src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=800&auto=format&fit=crop" class="w-full h-full object-cover grayscale opacity-80" />
         </div>
       </div>
