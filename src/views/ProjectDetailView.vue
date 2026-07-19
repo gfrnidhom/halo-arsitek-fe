@@ -3,9 +3,17 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { getProjectBySlug } from '@/api/services'
 import emblaCarouselVue from 'embla-carousel-vue'
+import { useSEO } from '@/composables/useSEO'
 
 const route = useRoute()
 const project = ref<any>(null)
+
+useSEO(() => ({
+  title: project.value?.title || 'Loading...',
+  description: project.value?.description || 'Detail project arsitektur',
+  image: project.value?.cover_image
+}))
+
 const loading = ref(true)
 
 const [emblaRef, emblaApi] = emblaCarouselVue({ loop: true })

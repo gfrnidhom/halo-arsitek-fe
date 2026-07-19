@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { submitContactForm, getSettings } from '@/api/services'
+import { useSEO } from '@/composables/useSEO'
+
+useSEO(() => ({
+  title: 'Contact Us',
+  description: 'Hubungi HALO ARSITEK untuk berdiskusi dan mewujudkan desain impian Anda bersama kami.'
+}))
 
 const settings = ref<any>(null)
 const form = ref({

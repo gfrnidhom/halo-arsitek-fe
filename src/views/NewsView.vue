@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { getNews } from '@/api/services'
+import { useSEO } from '@/composables/useSEO'
+
+useSEO(() => ({
+  title: 'News & Updates',
+  description: 'Berita, artikel, dan wawasan terbaru seputar dunia arsitektur dan desain dari HALO ARSITEK.'
+}))
 
 const newsList = ref<any[]>([])
 const loading = ref(true)

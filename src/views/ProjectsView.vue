@@ -2,6 +2,12 @@
 import { ref, onMounted, computed } from 'vue'
 import { getProjects, getCategories } from '@/api/services'
 import { RouterLink } from 'vue-router'
+import { useSEO } from '@/composables/useSEO'
+
+useSEO(() => ({
+  title: 'Projects',
+  description: 'Eksplorasi portofolio karya arsitektur dan desain interior dari HALO ARSITEK.'
+}))
 
 const projects = ref<any[]>([])
 const categories = ref<any[]>([])

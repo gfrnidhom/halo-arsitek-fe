@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { getTeam, getServices, getTestimonials, getSettings } from '@/api/services'
+import { useSEO } from '@/composables/useSEO'
+
+useSEO(() => ({
+  title: 'About Us',
+  description: 'Mengenal lebih dekat tim HALO ARSITEK, profil, dan layanan kami.'
+}))
 
 const team = ref<any[]>([])
 const services = ref<any[]>([])

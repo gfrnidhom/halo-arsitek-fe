@@ -3,6 +3,12 @@ import { ref, onMounted, watch } from 'vue'
 import api from '../api'
 import emblaCarouselVue from 'embla-carousel-vue'
 import Autoplay from 'embla-carousel-autoplay'
+import { useSEO } from '../composables/useSEO'
+
+useSEO(() => ({
+  title: 'Beranda',
+  description: 'Karya arsitektur dan desain interior terbaik dari HALO ARSITEK.'
+}))
 
 const projects = ref<any[]>([])
 const loading = ref(true)
