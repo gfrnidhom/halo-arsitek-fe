@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { getTeam, getServices, getTestimonials, getSettings } from '@/api/services'
 import { useSEO } from '@/composables/useSEO'
 
@@ -14,7 +14,29 @@ const testimonials = ref<any[]>([])
 const settings = ref<any>(null)
 const loading = ref(true)
 
+// Slider State
+const currentTestimonialSlide = ref(0)
+const isDesktop = ref(false)
+
+const checkDesktop = () => {
+  isDesktop.value = window.innerWidth >= 768
+}
+
+const testimonialPages = computed(() => {
+  const itemsPerPage = isDesktop.value ? 2 : 1
+  return Math.ceil(testimonials.value.length / itemsPerPage)
+})
+
+watch(testimonialPages, (newPages) => {
+  if (currentTestimonialSlide.value >= newPages) {
+    currentTestimonialSlide.value = Math.max(0, newPages - 1)
+  }
+})
+
 onMounted(async () => {
+  checkDesktop()
+  window.addEventListener('resize', checkDesktop)
+
   try {
     const [teamRes, servicesRes, testiRes, settingsRes] = await Promise.all([
       getTeam(), getServices(), getTestimonials(), getSettings()
@@ -29,44 +51,42 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkDesktop)
+})
 </script>
 
 <template>
-  <div class="w-full h-full relative">
-    
-    <!-- FIXED Header (Never Scrolls) -->
-    <div class="fixed top-0 left-0 w-full z-20 pointer-events-none">
-      <div class="w-full max-w-4xl mx-auto px-8 md:px-12 pt-32 pb-8 bg-[#f3f3f3] border-b border-gray-200/50">
-        <h1 class="text-xs tracking-[0.2em] uppercase text-gray-400 font-medium pointer-events-auto">About Us</h1>
+  <div class="w-full h-full overflow-y-auto custom-scrollbar relative overflow-x-hidden">
+    <div class="w-full max-w-4xl mx-auto flex flex-col px-8 md:px-12 pt-32 pb-32 relative">
+      
+      <div v-if="loading" class="flex items-center justify-center h-64">
+        <span class="text-sm tracking-widest text-gray-400 animate-pulse uppercase">Loading...</span>
       </div>
-    </div>
-
-    <!-- SCROLLABLE Content -->
-    <div class="w-full h-full overflow-y-auto custom-scrollbar pt-[180px] pb-32">
-      <div class="w-full max-w-4xl mx-auto flex flex-col px-8 md:px-12 relative">
-        
-        <div v-if="loading" class="flex items-center justify-center h-64">
-          <span class="text-sm tracking-widest text-gray-400 animate-pulse uppercase">Loading...</span>
-        </div>
-        
-        <div v-else class="flex flex-col space-y-24">
-          <!-- About Description -->
-          <section class="max-w-3xl">
-            <p class="text-xl md:text-2xl font-light leading-relaxed text-gray-800">
-            {{ settings?.about_description || 'We believe architecture is more than just space. It is the silent language of form, light, and context merging to create harmony in human experience.' }}
-          </p>
-        </section>
-
-        <!-- Services -->
-        <section v-if="services.length">
-          <h2 class="text-xs tracking-[0.2em] uppercase text-gray-400 mb-8 font-medium">Services</h2>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-10">
-            <div v-for="svc in services" :key="svc.id" class="flex flex-col">
-              <h3 class="text-base font-medium mb-3 text-gray-900">{{ svc.title }}</h3>
-              <p class="text-sm text-gray-500 leading-loose">{{ svc.description }}</p>
-            </div>
+      
+      <div v-else class="flex flex-col space-y-24">
+          
+          <!-- About & Services Row -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24">
+            <!-- About Description -->
+            <section>
+              <h1 class="text-xs tracking-[0.2em] uppercase text-gray-400 font-medium mb-6">About Us</h1>
+              <p class="text-lg md:text-xl font-light leading-relaxed text-gray-800">
+                {{ settings?.about_description || 'We believe architecture is more than just space. It is the silent language of form, light, and context merging to create harmony in human experience.' }}
+              </p>
+            </section>
+  
+            <!-- Services (Shortened) -->
+            <section v-if="services.length">
+              <h2 class="text-xs tracking-[0.2em] uppercase text-gray-400 mb-6 font-medium">Services</h2>
+              <div class="flex flex-col space-y-4">
+                <div v-for="svc in services" :key="svc.id" class="border-b border-gray-200 pb-3">
+                  <h3 class="text-sm font-medium text-gray-900">{{ svc.title }}</h3>
+                </div>
+              </div>
+            </section>
           </div>
-        </section>
 
         <!-- Team -->
         <section v-if="team.length">
@@ -87,15 +107,40 @@ onMounted(async () => {
           </div>
         </section>
 
-        <!-- Testimonials -->
-        <section v-if="testimonials.length">
-          <h2 class="text-xs tracking-[0.2em] uppercase text-gray-400 mb-8 font-medium">Testimonials</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div v-for="testi in testimonials" :key="testi.id" class="flex flex-col space-y-4">
-              <p class="italic text-sm text-gray-600 leading-relaxed border-l-2 border-gray-200 pl-6">"{{ testi.quote }}"</p>
-              <div class="pl-6">
-                <p class="text-xs font-medium text-gray-900">{{ testi.name }}</p>
-                <p class="text-[10px] uppercase tracking-wider text-gray-400 mt-1">{{ testi.role }}</p>
+        <!-- Testimonials Slider -->
+        <section v-if="testimonials.length" class="overflow-hidden w-full">
+          <div class="flex justify-between items-end mb-8">
+            <h2 class="text-xs tracking-[0.2em] uppercase text-gray-400 font-medium">Testimonials</h2>
+            <!-- Indicators -->
+            <div class="flex space-x-2" v-if="testimonialPages > 1">
+              <button 
+                v-for="page in testimonialPages" 
+                :key="page"
+                @click="currentTestimonialSlide = page - 1"
+                class="h-2 rounded-full transition-all duration-300"
+                :class="currentTestimonialSlide === page - 1 ? 'bg-gray-800 w-4' : 'bg-gray-300 w-2'"
+                :aria-label="`Go to slide ${page}`"
+              ></button>
+            </div>
+          </div>
+          
+          <div class="relative w-full -mx-4">
+            <div 
+              class="flex transition-transform duration-500 ease-out" 
+              :style="{ transform: `translateX(-${currentTestimonialSlide * 100}%)` }"
+            >
+              <div 
+                v-for="testi in testimonials" 
+                :key="testi.id" 
+                class="w-full md:w-1/2 flex-shrink-0 px-4"
+              >
+                <div class="flex flex-col space-y-4">
+                  <p class="italic text-sm text-gray-600 leading-relaxed border-l-2 border-gray-200 pl-6">"{{ testi.quote }}"</p>
+                  <div class="pl-6">
+                    <p class="text-xs font-medium text-gray-900">{{ testi.name }}</p>
+                    <p class="text-[10px] uppercase tracking-wider text-gray-400 mt-1">{{ testi.role }}</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -103,5 +148,4 @@ onMounted(async () => {
       </div>
     </div>
   </div>
-</div>
 </template>
