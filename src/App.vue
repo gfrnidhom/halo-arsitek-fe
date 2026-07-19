@@ -27,7 +27,7 @@ const closeMobileMenu = () => {
 <template>
   <div class="min-h-screen bg-[#f3f3f3] relative overflow-hidden font-sans text-gray-800 flex flex-col">
     <!-- Top Left Logo / Head Title -->
-    <header :class="['absolute top-6 left-6 md:top-8 md:left-8 z-50 transition-colors duration-500', route.path === '/' && !isMobileMenuOpen ? 'text-white drop-shadow-md' : 'text-gray-900']">
+    <header :class="['fixed top-6 left-6 md:top-8 md:left-8 z-50 transition-colors duration-500', route.path === '/' && !isMobileMenuOpen ? 'text-white drop-shadow-md' : 'text-gray-900']">
       <RouterLink to="/home" class="text-sm font-normal tracking-[0.2em] uppercase hover:opacity-70 transition-opacity" @click="closeMobileMenu">
         {{ settings?.site_name || 'HALO ARSITEK' }}
       </RouterLink>
@@ -35,7 +35,7 @@ const closeMobileMenu = () => {
 
     <!-- Mobile Menu Toggle Button -->
     <button 
-      class="md:hidden absolute top-5 right-6 z-50 p-1"
+      class="md:hidden fixed top-5 right-6 z-50 p-1"
       :class="[route.path === '/' && !isMobileMenuOpen ? 'text-white drop-shadow-md' : 'text-gray-900']"
       @click="isMobileMenuOpen = !isMobileMenuOpen"
     >
@@ -71,7 +71,7 @@ const closeMobileMenu = () => {
     </Transition>
 
     <!-- Bottom Left Navigation (Hidden on Home/Landing & Mobile) -->
-    <nav v-if="route.path !== '/'" class="hidden md:flex absolute bottom-8 left-8 z-50 flex-col space-y-3 text-gray-900">
+    <nav v-if="route.path !== '/'" class="hidden md:flex fixed bottom-8 left-8 z-50 flex-col space-y-3 text-gray-900">
       <RouterLink to="/projects" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-wider">Projects</RouterLink>
       <RouterLink to="/about" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-wider">About</RouterLink>
       <RouterLink to="/news" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-wider">News</RouterLink>
@@ -79,7 +79,7 @@ const closeMobileMenu = () => {
     </nav>
 
     <!-- Main Content Area -->
-    <main :class="['w-full flex-1 h-[100dvh] custom-scrollbar', route.path === '/' || route.path === '/home' ? 'overflow-hidden' : 'overflow-y-scroll']">
+    <main :class="['w-full flex-1 h-[100dvh] custom-scrollbar', route.path === '/' || route.path === '/home' || route.path === '/about' ? 'overflow-hidden' : 'overflow-y-scroll']">
       <RouterView v-slot="{ Component }">
         <transition name="page-fade" mode="out-in">
           <component :is="Component" :key="route.path" />
@@ -88,7 +88,7 @@ const closeMobileMenu = () => {
     </main>
 
     <!-- Bottom Right Copyright & Socials (Footer) (Hidden on Mobile) -->
-    <footer :class="['hidden md:flex absolute bottom-8 right-8 z-50 flex-col items-end space-y-2 text-xs transition-colors duration-500', route.path === '/' ? 'text-white drop-shadow-md opacity-90' : 'text-gray-900 opacity-70']">
+    <footer :class="['hidden md:flex fixed bottom-8 right-8 z-50 flex-col items-end space-y-2 text-xs transition-colors duration-500', route.path === '/' ? 'text-white drop-shadow-md opacity-90' : 'text-gray-900 opacity-70']">
       <div v-if="settings?.social_media" class="flex space-x-4">
         <a v-if="settings.social_media.instagram" :href="settings.social_media.instagram" target="_blank" class="hover:opacity-100 transition-opacity uppercase tracking-wider">Instagram</a>
         <a v-if="settings.social_media.facebook" :href="settings.social_media.facebook" target="_blank" class="hover:opacity-100 transition-opacity uppercase tracking-wider">Facebook</a>
@@ -97,7 +97,7 @@ const closeMobileMenu = () => {
     </footer>
 
     <!-- Mobile Minimal Copyright -->
-    <div :class="['md:hidden absolute bottom-0 w-full z-30 pointer-events-none flex justify-end items-end pb-6 pr-6 pt-24', 
+    <div :class="['md:hidden fixed bottom-0 w-full z-30 pointer-events-none flex justify-end items-end pb-6 pr-6 pt-24', 
       route.path === '/' && !isMobileMenuOpen ? '' : 'bg-gradient-to-t from-[#f3f3f3] via-[#f3f3f3]/80 to-transparent']">
       <p :class="['text-[10px] transition-colors duration-500', 
         route.path === '/' && !isMobileMenuOpen 
