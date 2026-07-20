@@ -27,9 +27,13 @@ const closeMobileMenu = () => {
 <template>
   <div class="min-h-screen bg-[#f3f3f3] relative overflow-hidden font-sans text-gray-800 flex flex-col">
     <!-- Top Left Logo / Head Title -->
-    <header :class="['fixed top-6 left-6 md:top-8 md:left-8 z-50 transition-colors duration-500', route.path === '/' && !isMobileMenuOpen ? 'text-white drop-shadow-md' : 'text-gray-900']">
-      <RouterLink to="/home" class="text-sm font-normal tracking-[0.2em] uppercase hover:opacity-70 transition-opacity" @click="closeMobileMenu">
-        {{ settings?.site_name || 'HALO ARSITEK' }}
+    <header class="fixed top-6 left-6 md:top-8 md:left-8 z-50 transition-colors duration-500">
+      <RouterLink to="/home" class="hover:opacity-70 transition-opacity block" @click="closeMobileMenu">
+        <img 
+          :src="route.path === '/' && !isMobileMenuOpen ? '/images/logo-white.png' : '/images/logo-black.png'" 
+          :alt="settings?.site_name || 'HALO ARSITEK'"
+          :class="['h-6 md:h-8 w-auto object-contain transition-all duration-500', route.path === '/' && !isMobileMenuOpen ? 'drop-shadow-md' : '']"
+        />
       </RouterLink>
     </header>
 
