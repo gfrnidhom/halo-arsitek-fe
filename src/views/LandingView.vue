@@ -17,9 +17,9 @@ const projects = ref<any[]>([])
 const loading = ref(true)
 
 const [emblaRef, emblaApi] = emblaCarouselVue(
-  { loop: true, watchDrag: false },
+  { loop: true, watchDrag: false, duration: 60 },
   [
-    Autoplay({ delay: 3500, stopOnInteraction: false }),
+    Autoplay({ delay: 6000, stopOnInteraction: false }),
     Fade()
   ]
 )

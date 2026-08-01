@@ -74,17 +74,38 @@ const closeMobileMenu = () => {
       </div>
     </Transition>
 
-    <!-- Bottom Left Navigation (Hidden on Home/Landing & Mobile) -->
-    <div v-if="route.path !== '/'" class="hidden md:block fixed bottom-0 left-0 z-50 pointer-events-none">
-      <div class="pb-8 pl-8 pt-16 pr-16 bg-gradient-to-t from-[#f3f3f3] via-[#f3f3f3]/80 to-transparent pointer-events-auto">
-        <nav class="flex flex-row space-x-8 items-center text-gray-900">
-          <RouterLink to="/projects" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-widest">Projects</RouterLink>
-          <RouterLink to="/about" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-widest">About</RouterLink>
-          <RouterLink to="/news" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-widest">News</RouterLink>
-          <RouterLink to="/contact" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-widest">Contact</RouterLink>
-        </nav>
+    <!-- Bottom Bar: Full-width fade gradient (Hidden on Landing & Mobile) -->
+    <div v-if="route.path !== '/'" class="hidden md:block fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
+      <div class="w-full bg-gradient-to-t from-[#f3f3f3] via-[#f3f3f3]/80 to-transparent pt-20 pb-8 px-8">
+        <div class="flex justify-between items-center pointer-events-auto">
+          <!-- Left: Navigation -->
+          <nav class="flex flex-row space-x-8 items-center text-gray-900">
+            <RouterLink to="/projects" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-widest">Projects</RouterLink>
+            <RouterLink to="/about" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-widest">About</RouterLink>
+            <RouterLink to="/news" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-widest">News</RouterLink>
+            <RouterLink to="/contact" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-widest">Contact</RouterLink>
+          </nav>
+
+          <!-- Right: Socials & Copyright -->
+          <div class="flex flex-row items-center space-x-8 text-xs text-gray-900 opacity-70">
+            <div v-if="settings?.social_media" class="flex space-x-4">
+              <a v-if="settings.social_media.instagram" :href="settings.social_media.instagram" target="_blank" class="hover:opacity-100 transition-opacity uppercase tracking-widest">Instagram</a>
+              <a v-if="settings.social_media.facebook" :href="settings.social_media.facebook" target="_blank" class="hover:opacity-100 transition-opacity uppercase tracking-widest">Facebook</a>
+            </div>
+            <p class="uppercase tracking-widest">&copy; {{ new Date().getFullYear() }}. {{ settings?.site_name || 'Halo Arsitek' }}</p>
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- Landing page: Bottom bar with white text, no fade -->
+    <footer v-if="route.path === '/'" class="hidden md:flex fixed bottom-8 right-8 z-50 flex-row items-center space-x-8 text-xs text-white drop-shadow-md opacity-90">
+      <div v-if="settings?.social_media" class="flex space-x-4">
+        <a v-if="settings.social_media.instagram" :href="settings.social_media.instagram" target="_blank" class="hover:opacity-100 transition-opacity uppercase tracking-widest">Instagram</a>
+        <a v-if="settings.social_media.facebook" :href="settings.social_media.facebook" target="_blank" class="hover:opacity-100 transition-opacity uppercase tracking-widest">Facebook</a>
+      </div>
+      <p class="uppercase tracking-widest">&copy; {{ new Date().getFullYear() }}. {{ settings?.site_name || 'Halo Arsitek' }}</p>
+    </footer>
 
     <!-- Main Content Area -->
     <main :class="['w-full flex-1 h-[100dvh] custom-scrollbar', route.path === '/' || route.path === '/home' || route.path === '/about' ? 'overflow-hidden' : 'overflow-y-scroll']">
@@ -94,15 +115,6 @@ const closeMobileMenu = () => {
         </transition>
       </RouterView>
     </main>
-
-    <!-- Bottom Right Copyright & Socials (Footer) (Hidden on Mobile) -->
-    <footer :class="['hidden md:flex fixed bottom-8 right-8 z-50 flex-row items-center space-x-8 text-xs transition-colors duration-500', route.path === '/' ? 'text-white drop-shadow-md opacity-90' : 'text-gray-900 opacity-70']">
-      <div v-if="settings?.social_media" class="flex space-x-4">
-        <a v-if="settings.social_media.instagram" :href="settings.social_media.instagram" target="_blank" class="hover:opacity-100 transition-opacity uppercase tracking-widest">Instagram</a>
-        <a v-if="settings.social_media.facebook" :href="settings.social_media.facebook" target="_blank" class="hover:opacity-100 transition-opacity uppercase tracking-widest">Facebook</a>
-      </div>
-      <p class="uppercase tracking-widest">&copy; {{ new Date().getFullYear() }}. {{ settings?.site_name || 'Halo Arsitek' }}</p>
-    </footer>
 
     <!-- Mobile Minimal Copyright -->
     <div :class="['md:hidden fixed bottom-0 w-full z-30 pointer-events-none flex justify-end items-end pb-6 pr-6 pt-24', 
