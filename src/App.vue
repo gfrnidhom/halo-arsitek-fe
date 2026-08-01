@@ -75,12 +75,16 @@ const closeMobileMenu = () => {
     </Transition>
 
     <!-- Bottom Left Navigation (Hidden on Home/Landing & Mobile) -->
-    <nav v-if="route.path !== '/'" class="hidden md:flex fixed bottom-8 left-8 z-50 flex-row space-x-8 items-center text-gray-900">
-      <RouterLink to="/projects" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-widest">Projects</RouterLink>
-      <RouterLink to="/about" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-widest">About</RouterLink>
-      <RouterLink to="/news" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-widest">News</RouterLink>
-      <RouterLink to="/contact" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-widest">Contact</RouterLink>
-    </nav>
+    <div v-if="route.path !== '/'" class="hidden md:block fixed bottom-0 left-0 z-50 pointer-events-none">
+      <div class="pb-8 pl-8 pt-16 pr-16 bg-gradient-to-t from-[#f3f3f3] via-[#f3f3f3]/80 to-transparent pointer-events-auto">
+        <nav class="flex flex-row space-x-8 items-center text-gray-900">
+          <RouterLink to="/projects" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-widest">Projects</RouterLink>
+          <RouterLink to="/about" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-widest">About</RouterLink>
+          <RouterLink to="/news" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-widest">News</RouterLink>
+          <RouterLink to="/contact" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-widest">Contact</RouterLink>
+        </nav>
+      </div>
+    </div>
 
     <!-- Main Content Area -->
     <main :class="['w-full flex-1 h-[100dvh] custom-scrollbar', route.path === '/' || route.path === '/home' || route.path === '/about' ? 'overflow-hidden' : 'overflow-y-scroll']">
