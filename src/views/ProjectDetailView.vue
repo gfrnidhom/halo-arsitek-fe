@@ -132,127 +132,108 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <!-- Full width white background, forced to 100vh and no scroll -->
-  <div class="w-full h-[100dvh] bg-white text-gray-900 font-sans relative box-border project-detail-page overflow-hidden">
+  <!-- Fullscreen slider container -->
+  <div class="w-full h-[100dvh] bg-black text-white font-sans relative box-border overflow-hidden select-none">
     
-    <div class="w-full h-full max-w-[1280px] mx-auto flex flex-col pt-[88px] pb-[88px] px-8 sm:px-12 md:px-16">
+    <!-- Loading State -->
+    <div v-if="loading" class="absolute inset-0 flex items-center justify-center z-20 bg-black">
+      <span class="text-xs md:text-sm tracking-widest text-white/50 animate-pulse uppercase">Loading project...</span>
+    </div>
 
-      <!-- Loading State -->
-      <div v-if="loading" class="w-full flex-1 flex items-center justify-center">
-        <span class="text-xs md:text-sm tracking-widest text-gray-400 animate-pulse uppercase">Loading project...</span>
+    <template v-else>
+      <!-- Main Background Image Slider -->
+      <transition-group name="fade" tag="div" class="absolute inset-0 z-0">
+        <div 
+          v-for="(img, idx) in galleryImages" 
+          :key="img"
+          v-show="activeImageIndex === idx"
+          class="absolute inset-0 w-full h-full"
+        >
+          <img 
+            :src="img" 
+            :alt="`${project?.title} slide ${idx + 1}`"
+            class="w-full h-full object-cover"
+          />
+          <!-- Optional subtle gradient overlay for text readability -->
+          <div class="absolute inset-0 bg-black/10 pointer-events-none"></div>
+        </div>
+      </transition-group>
+
+      <!-- Top Right Info -->
+      <div class="absolute top-8 md:top-12 right-8 md:right-16 text-right z-10 drop-shadow-md">
+        <div class="text-base md:text-xl lg:text-2xl font-normal lowercase tracking-wide mb-1">
+          {{ project?.title }}
+        </div>
+        <div class="text-xs md:text-sm font-light text-white/90 tracking-wide">
+          <span>{{ project?.location || 'Jakarta Selatan' }}</span>
+          <span class="mx-1">/</span>
+          <span>{{ project?.year || '2025' }}</span>
+        </div>
       </div>
 
-      <!-- Main Content -->
-      <div v-else class="w-full h-full flex flex-col flex-1 min-h-0">
-        <!-- Header Info Section -->
-        <div class="w-full flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-6 md:mb-8 shrink-0 select-none">
-          <!-- Left Column: Title and Subtitle -->
-          <div class="flex flex-col flex-1">
-            <h1 class="text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#111] leading-none mb-3 lowercase">
-              {{ project?.title }}
-            </h1>
-            <p class="text-sm md:text-base lg:text-lg font-normal text-gray-500">
-              <span>{{ project?.location || 'Jakarta Selatan' }}</span>
-              <span class="mx-1.5">/</span>
-              <span>{{ project?.year || '2023' }}</span>
-            </p>
-          </div>
+      <!-- Navigation Arrows -->
+      <button 
+        @click="prevImage" 
+        class="absolute left-4 sm:left-8 md:left-12 top-1/2 -translate-y-1/2 w-10 h-10 md:w-14 md:h-14 rounded-full border-[1.5px] border-white/60 text-white/80 hover:text-white hover:border-white flex items-center justify-center backdrop-blur-sm transition-all z-10 cursor-pointer group"
+        aria-label="Previous image"
+      >
+        <svg class="w-5 h-5 md:w-6 md:h-6 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+        </svg>
+      </button>
 
-          <!-- Right Column: Description (Italic, Right-aligned) -->
-          <div class="flex-1 flex justify-start md:justify-end pb-1">
-            <div class="text-left md:text-right italic font-light text-xs sm:text-sm md:text-base lg:text-[15px] text-gray-500 max-w-sm md:max-w-lg lg:max-w-[500px] leading-relaxed whitespace-pre-line">
-              {{ project?.description }}
-            </div>
-          </div>
-        </div>
+      <button 
+        @click="nextImage" 
+        class="absolute right-4 sm:right-8 md:right-12 top-1/2 -translate-y-1/2 w-10 h-10 md:w-14 md:h-14 rounded-full border-[1.5px] border-white/60 text-white/80 hover:text-white hover:border-white flex items-center justify-center backdrop-blur-sm transition-all z-10 cursor-pointer group"
+        aria-label="Next image"
+      >
+        <svg class="w-5 h-5 md:w-6 md:h-6 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+        </svg>
+      </button>
 
-        <!-- Main Gallery Grid (Forces rows, flex-1 to fill remaining height) -->
-        <div class="w-full flex-1 min-h-0 grid grid-cols-2 grid-rows-5 md:grid-cols-5 md:grid-rows-2 gap-3 sm:gap-4 md:gap-5 lg:gap-6">
-          <div 
+      <!-- Bottom Thumbnails -->
+      <div class="absolute bottom-6 md:bottom-10 left-0 right-0 w-full flex justify-center z-10 px-4 pointer-events-none">
+        <div class="flex gap-2 md:gap-3 overflow-x-auto no-scrollbar max-w-[90vw] md:max-w-[80vw] lg:max-w-[1000px] pointer-events-auto pb-2 px-2">
+          <button 
             v-for="(img, idx) in galleryImages" 
-            :key="idx"
-            @click="openLightbox(idx)"
-            class="group relative w-full h-full rounded-none overflow-hidden bg-gray-100 cursor-pointer transition-transform duration-500 ease-out transform hover:scale-[1.02] hover:z-10 hover:shadow-xl"
+            :key="idx" 
+            @click="activeImageIndex = idx"
+            :class="[
+              'w-12 h-12 md:w-16 md:h-16 rounded-md overflow-hidden border-2 transition-all duration-300 shrink-0 cursor-pointer',
+              activeImageIndex === idx ? 'border-white scale-110 shadow-lg' : 'border-transparent opacity-50 hover:opacity-100 hover:scale-105'
+            ]"
           >
             <img 
               :src="img" 
-              :alt="`${project?.title} photo ${idx + 1}`"
-              class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              class="w-full h-full object-cover" 
+              alt="Thumbnail"
               onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=800&auto=format&fit=crop'"
             />
-            <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-          </div>
+          </button>
         </div>
-
       </div>
-
-      <!-- Lightbox Modal Gallery -->
-      <Transition name="fade">
-        <div 
-          v-if="isLightboxOpen" 
-          class="fixed inset-0 z-[100] bg-black/92 backdrop-blur-md flex items-center justify-center p-4 md:p-8"
-          @click.self="closeLightbox"
-        >
-          <!-- Close Button -->
-          <button 
-            @click="closeLightbox"
-            class="absolute top-6 right-6 text-white/80 hover:text-white transition-colors p-2 cursor-pointer z-[110]"
-            aria-label="Close image lightbox"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 md:w-10 md:h-10">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-
-          <!-- Main Lightbox Image -->
-          <div class="relative max-w-5xl max-h-[85vh] w-full h-full flex flex-col items-center justify-center">
-            <img 
-              :src="galleryImages[activeImageIndex]" 
-              :alt="`${project?.title} - photo ${activeImageIndex + 1}`"
-              class="max-w-full max-h-[78vh] object-contain rounded-xl shadow-2xl transition-all duration-300"
-            />
-            
-            <!-- Image Counter -->
-            <div class="mt-4 text-xs md:text-sm text-white/70 tracking-widest font-light">
-              {{ activeImageIndex + 1 }} / {{ galleryImages.length }}
-            </div>
-          </div>
-
-          <!-- Previous Button -->
-          <button 
-            @click.stop="prevImage" 
-            class="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 text-white/70 hover:text-white p-3 hover:scale-110 transition-all cursor-pointer z-[110]"
-            aria-label="Previous image"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 md:w-12 md:h-12">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-            </svg>
-          </button>
-
-          <!-- Next Button -->
-          <button 
-            @click.stop="nextImage" 
-            class="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 text-white/70 hover:text-white p-3 hover:scale-110 transition-all cursor-pointer z-[110]"
-            aria-label="Next image"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 md:w-12 md:h-12">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-            </svg>
-          </button>
-        </div>
-      </Transition>
-    </div>
+    </template>
   </div>
 </template>
 
 <style scoped>
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.8s ease;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
 }
-</style>
 
+/* Hide scrollbar for thumbnails */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+</style>

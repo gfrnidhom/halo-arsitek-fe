@@ -74,7 +74,7 @@ const toggleMainMenu = () => {
     </div>
 
     <!-- Middle Left Hamburger Menu Toggle (Nav) in original position -->
-    <div class="fixed top-1/2 -translate-y-1/2 left-6 md:left-8 z-50">
+    <div v-if="route.name !== 'project-detail' || isMainMenuOpen" class="fixed top-1/2 -translate-y-1/2 left-6 md:left-8 z-50">
       <button 
         @click="toggleMainMenu"
         class="hover:scale-105 active:scale-95 transition-all duration-300 p-1 cursor-pointer"
@@ -86,11 +86,11 @@ const toggleMainMenu = () => {
           xmlns="http://www.w3.org/2000/svg" 
           fill="none" 
           viewBox="0 0 24 24" 
-          stroke-width="1.2" 
+          stroke-width="1.0" 
           stroke="currentColor" 
           class="w-8 h-8 md:w-10 md:h-10"
         >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5m-16.5 6h16.5" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
         </svg>
         <svg 
           v-else 

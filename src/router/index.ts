@@ -54,4 +54,13 @@ const router = createRouter({
   ]
 })
 
+router.onError((error, to) => {
+  // If a chunk load error or dynamic import failure occurs, refresh the page to get the latest assets
+  if (error.message.includes('Failed to fetch dynamically imported module') || 
+      error.name === 'ChunkLoadError' || 
+      error.message.includes('Importing a module script failed')) {
+    window.location.href = to.fullPath
+  }
+})
+
 export default router

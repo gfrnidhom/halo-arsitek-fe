@@ -15,29 +15,32 @@ import { RouterLink } from 'vue-router'
         </div>
         
         <!-- Right: Studio Description -->
-        <div class="max-w-[560px] md:max-w-[620px] text-left md:text-right text-xs md:text-sm lg:text-[14px] font-light leading-relaxed text-gray-700 select-none">
-          HALO ARSITEK is a Jakarta-based architecture studio designing residential and commercial<br class="hidden md:inline" />
-          spaces with one belief at the core: Great Design Creates Great Stories.
+        <div class="text-right text-[11px] md:text-[13px] font-normal leading-[1.6] text-[#111] tracking-wide select-none">
+          HALO ARSITEK is a Jakarta-based architecture<br />
+          studio designing residential and commercial<br />
+          spaces with one belief at the core: Great Design<br />
+          Creates Great Stories.
         </div>
       </div>
 
-      <!-- Center: Hero Title & Link (Perfectly Centered in Center Middle) -->
-      <div class="absolute top-[48%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-full px-8 sm:px-12 md:px-16 box-border flex flex-col items-center">
+      <!-- Center: Hero Title & Link (Spans full width with padding to match edges perfectly) -->
+      <div class="absolute top-[48%] left-0 right-0 -translate-y-1/2 w-full px-8 sm:px-12 md:px-16 box-border flex flex-col">
         <!-- Main Big Text -->
-        <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-[4.8vw] font-extralight tracking-tight text-[#111] leading-[1.1] text-center select-none whitespace-nowrap">
+        <h1 class="w-full text-[28px] sm:text-[36px] md:text-[4vw] lg:text-[4.2vw] font-light tracking-tight text-[#111] leading-[1.1] select-none whitespace-nowrap" style="text-align: justify; text-align-last: justify; text-justify: inter-word;">
           Creating Architecture That Tells Great Stories
         </h1>
         
         <!-- Discover Works Link -->
-        <div class="w-full max-w-[90vw] lg:max-w-[1000px] mx-auto flex justify-end mt-6 sm:mt-8 md:mt-12 pr-4 lg:pr-6">
+        <div class="w-full flex justify-end">
           <RouterLink 
             to="/projects" 
-            class="group flex items-center gap-3 md:gap-4 text-sm md:text-base font-normal tracking-wide text-gray-900 hover:opacity-70 transition-opacity cursor-pointer"
+            class="group flex items-center gap-3 mt-4 md:mt-6 text-sm md:text-base font-normal tracking-wide text-gray-900 hover:opacity-70 transition-opacity cursor-pointer"
           >
             <span>Discover works</span>
-            <svg class="-translate-y-[1px] w-6 md:w-8 h-3 transition-transform duration-300 group-hover:translate-x-1" viewBox="0 0 56 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M0 6H44" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              <polygon points="42,2 52,6 42,10" fill="currentColor"/>
+            <!-- A slightly longer arrow matching mockup -->
+            <svg class="-translate-y-[1px] w-8 md:w-10 h-[10px] transition-transform duration-300 group-hover:translate-x-1" viewBox="0 0 64 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0 6H54" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <polygon points="52,1 62,6 52,11" fill="currentColor"/>
             </svg>
           </RouterLink>
         </div>
