@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { RouterView, RouterLink, useRoute } from 'vue-router'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { getSettings } from './api/services'
-import { Menu, X } from 'lucide-vue-next'
 
 const route = useRoute()
 const settings = ref<any>(null)
-const isMobileMenuOpen = ref(false)
+const isMainMenuOpen = ref(false)
 
 onMounted(async () => {
   try {
@@ -17,70 +16,95 @@ onMounted(async () => {
   } catch (error) {
     console.error('Failed to load settings', error)
   }
+  
+  // Listen for open-main-menu events from views (e.g. LandingView)
+  window.addEventListener('open-main-menu', openMainMenu)
 })
 
-const closeMobileMenu = () => {
-  isMobileMenuOpen.value = false
+onUnmounted(() => {
+  window.removeEventListener('open-main-menu', openMainMenu)
+  document.body.classList.remove('landing-menu-open')
+})
+
+const openMainMenu = () => {
+  isMainMenuOpen.value = true
+  document.body.classList.add('landing-menu-open')
+}
+
+const closeMainMenu = () => {
+  isMainMenuOpen.value = false
+  document.body.classList.remove('landing-menu-open')
+}
+
+const toggleMainMenu = () => {
+  if (isMainMenuOpen.value) {
+    closeMainMenu()
+  } else {
+    openMainMenu()
+  }
 }
 </script>
 
 <template>
   <div class="min-h-screen bg-[#f3f3f3] relative overflow-hidden font-sans text-gray-800 flex flex-col">
-    <!-- Top Left Logo / Head Title -->
-    <header class="fixed top-6 left-6 md:top-8 md:left-8 z-50 transition-colors duration-500">
-      <RouterLink to="/home" class="hover:opacity-70 transition-opacity block" @click="closeMobileMenu">
-        <img 
-          :src="route.path === '/' && !isMobileMenuOpen ? '/images/logo-white.png' : '/images/logo-black.png'" 
-          :alt="settings?.site_name || 'HALO ARSITEK'"
-          :class="['h-6 md:h-8 w-auto object-contain transition-all duration-500', route.path === '/' && !isMobileMenuOpen ? 'drop-shadow-md' : '']"
-        />
-      </RouterLink>
-    </header>
-
-    <!-- Mobile Menu Toggle Button -->
-    <button 
-      class="md:hidden fixed top-5 right-6 z-50 p-1"
-      :class="[route.path === '/' && !isMobileMenuOpen ? 'text-white drop-shadow-md' : 'text-gray-900']"
-      @click="isMobileMenuOpen = !isMobileMenuOpen"
-    >
-      <X v-if="isMobileMenuOpen" class="w-6 h-6" />
-      <Menu v-else class="w-6 h-6" />
-    </button>
-
-    <!-- Mobile Fullscreen Menu -->
-    <Transition name="fade">
-      <div v-if="isMobileMenuOpen" class="md:hidden fixed inset-0 z-40 bg-[#f3f3f3] flex flex-col justify-between pt-32 pb-12 px-8">
-        <!-- Main Links -->
-        <div class="flex flex-col space-y-8 mt-8">
-          <RouterLink to="/projects" class="text-lg font-light tracking-widest uppercase text-gray-900 hover:opacity-70 transition-opacity" @click="closeMobileMenu">Projects</RouterLink>
-          <RouterLink to="/about" class="text-lg font-light tracking-widest uppercase text-gray-900 hover:opacity-70 transition-opacity" @click="closeMobileMenu">About</RouterLink>
-          <RouterLink to="/news" class="text-lg font-light tracking-widest uppercase text-gray-900 hover:opacity-70 transition-opacity" @click="closeMobileMenu">News</RouterLink>
-          <RouterLink to="/contact" class="text-lg font-light tracking-widest uppercase text-gray-900 hover:opacity-70 transition-opacity" @click="closeMobileMenu">Contact</RouterLink>
-        </div>
+    <!-- Global UI Overlay Container (Constrained to 1440px like Project Detail) -->
+    <div class="fixed inset-0 pointer-events-none z-50 flex justify-center">
+      <div class="w-full h-full max-w-[1280px] relative px-8 sm:px-12 md:px-16 pointer-events-none">
         
-        <!-- Corporate Contact Info -->
-        <div class="flex flex-col space-y-6 pt-10 border-t border-gray-300">
-          <div class="flex flex-col space-y-2">
-            <span class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-semibold mb-1">Inquiries</span>
-            <a :href="`mailto:${settings?.contact_email || 'hello@haloarsitek.com'}`" class="text-sm font-medium tracking-wider text-gray-900">{{ settings?.contact_email || 'hello@haloarsitek.com' }}</a>
-            <a :href="`tel:${settings?.contact_phone || '+628111222333'}`" class="text-sm font-medium tracking-wider text-gray-900">{{ settings?.contact_phone || '+62 811 1222 333' }}</a>
-          </div>
-          
-          <div v-if="settings?.social_media" class="flex space-x-6">
-            <a v-if="settings.social_media.instagram" :href="settings.social_media.instagram" target="_blank" class="text-xs font-semibold uppercase tracking-[0.1em] text-gray-900 hover:opacity-70">Instagram</a>
-            <a v-if="settings.social_media.facebook" :href="settings.social_media.facebook" target="_blank" class="text-xs font-semibold uppercase tracking-[0.1em] text-gray-900 hover:opacity-70">Facebook</a>
-          </div>
-        </div>
-      </div>
-    </Transition>
+        <!-- Top Left Logo / Head Title -->
+        <header class="absolute top-6 md:top-8 lg:top-10 left-8 sm:left-12 md:left-16 pointer-events-auto transition-colors duration-500">
+          <RouterLink to="/" class="hover:opacity-70 transition-opacity block header-logo-link" @click="closeMainMenu">
+            <img 
+              :src="route.path === '/' && !isMainMenuOpen ? '/images/logo-white.png' : '/images/logo-black.png'" 
+              :alt="settings?.site_name || 'HALO ARSITEK'"
+              :class="['h-6 md:h-8 w-auto object-contain transition-all duration-500', route.path === '/' && !isMainMenuOpen ? 'drop-shadow-md' : '']"
+            />
+          </RouterLink>
+        </header>
 
-    <!-- Bottom Left Navigation (Hidden on Home/Landing & Mobile) -->
-    <nav v-if="route.path !== '/'" class="hidden md:flex fixed bottom-8 left-8 z-50 flex-row space-x-8 items-center text-gray-900">
-      <RouterLink to="/projects" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-widest">Projects</RouterLink>
-      <RouterLink to="/about" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-widest">About</RouterLink>
-      <RouterLink to="/news" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-widest">News</RouterLink>
-      <RouterLink to="/contact" class="text-xs opacity-70 hover:opacity-100 transition-opacity uppercase tracking-widest">Contact</RouterLink>
-    </nav>
+        <!-- Bottom Right Copyright & Socials (Footer) (Hidden on Mobile) -->
+        <footer :class="['hidden md:flex absolute bottom-10 right-8 sm:right-12 md:right-16 pointer-events-auto flex-row items-center space-x-8 text-xs font-normal transition-colors duration-500', route.path === '/' ? 'text-white drop-shadow-md opacity-90' : 'text-gray-900 opacity-90']">
+          <div v-if="settings?.social_media" class="flex space-x-4">
+            <a v-if="settings.social_media.instagram" :href="settings.social_media.instagram" target="_blank" class="hover:opacity-100 transition-opacity uppercase tracking-widest">Instagram</a>
+            <a v-if="settings.social_media.facebook" :href="settings.social_media.facebook" target="_blank" class="hover:opacity-100 transition-opacity uppercase tracking-widest">Facebook</a>
+          </div>
+          <p class="tracking-wide">&copy; Halo Arsitek Studio.</p>
+        </footer>
+      </div>
+    </div>
+
+    <!-- Middle Left Hamburger Menu Toggle (Nav) in original position -->
+    <div class="fixed top-1/2 -translate-y-1/2 left-6 md:left-8 z-50">
+      <button 
+        @click="toggleMainMenu"
+        class="hover:scale-105 active:scale-95 transition-all duration-300 p-1 cursor-pointer"
+        :class="[route.path === '/' && !isMainMenuOpen ? 'text-white drop-shadow-md' : 'text-gray-900']"
+        aria-label="Toggle menu"
+      >
+        <svg 
+          v-if="!isMainMenuOpen" 
+          xmlns="http://www.w3.org/2000/svg" 
+          fill="none" 
+          viewBox="0 0 24 24" 
+          stroke-width="1.2" 
+          stroke="currentColor" 
+          class="w-8 h-8 md:w-10 md:h-10"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5m-16.5 6h16.5" />
+        </svg>
+        <svg 
+          v-else 
+          xmlns="http://www.w3.org/2000/svg" 
+          fill="none" 
+          viewBox="0 0 24 24" 
+          stroke-width="0.8" 
+          stroke="currentColor" 
+          class="w-10 h-10 md:w-12 md:h-12 text-[#eae7e1]/70 hover:text-[#eae7e1]"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
 
     <!-- Main Content Area -->
     <main :class="['w-full flex-1 h-[100dvh] custom-scrollbar', route.path === '/' || route.path === '/home' || route.path === '/about' ? 'overflow-hidden' : 'overflow-y-scroll']">
@@ -91,25 +115,57 @@ const closeMobileMenu = () => {
       </RouterView>
     </main>
 
-    <!-- Bottom Right Copyright & Socials (Footer) (Hidden on Mobile) -->
-    <footer :class="['hidden md:flex fixed bottom-8 right-8 z-50 flex-row items-center space-x-8 text-xs transition-colors duration-500', route.path === '/' ? 'text-white drop-shadow-md opacity-90' : 'text-gray-900 opacity-70']">
-      <div v-if="settings?.social_media" class="flex space-x-4">
-        <a v-if="settings.social_media.instagram" :href="settings.social_media.instagram" target="_blank" class="hover:opacity-100 transition-opacity uppercase tracking-widest">Instagram</a>
-        <a v-if="settings.social_media.facebook" :href="settings.social_media.facebook" target="_blank" class="hover:opacity-100 transition-opacity uppercase tracking-widest">Facebook</a>
-      </div>
-      <p class="uppercase tracking-widest">&copy; {{ new Date().getFullYear() }}. {{ settings?.site_name || 'Halo Arsitek' }}</p>
-    </footer>
-
     <!-- Mobile Minimal Copyright -->
     <div :class="['md:hidden fixed bottom-0 w-full z-30 pointer-events-none flex justify-end items-end pb-6 pr-6 pt-24', 
-      route.path === '/' && !isMobileMenuOpen ? '' : 'bg-gradient-to-t from-[#f3f3f3] via-[#f3f3f3]/80 to-transparent']">
-      <p :class="['text-[10px] transition-colors duration-500', 
-        route.path === '/' && !isMobileMenuOpen 
+      route.path === '/' && !isMainMenuOpen ? '' : 'bg-gradient-to-t from-[#f3f3f3] via-[#f3f3f3]/80 to-transparent']">
+      <p :class="['text-[10px] font-light transition-colors duration-500', 
+        route.path === '/' && !isMainMenuOpen 
           ? 'text-white drop-shadow-md opacity-70' 
           : 'text-gray-900 opacity-70']">
-        &copy; {{ new Date().getFullYear() }}. {{ settings?.site_name || 'Halo Arsitek' }}
+        &copy; Halo Arsitek Studio.
       </p>
     </div>
+
+    <!-- Global Menu Overlay -->
+    <Transition name="menu-fade">
+      <div 
+        v-if="isMainMenuOpen" 
+        class="fixed inset-0 z-40 bg-[#555d50] select-none cursor-default"
+        style="background-image: radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, rgba(0, 0, 0, 0.12) 100%), url('data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\' opacity=\'0.055\'/%3E%3C/svg%3E');"
+      >
+        <!-- Center: Navigation Links -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col space-y-12 md:space-y-24 items-start text-left">
+          <RouterLink 
+            to="/" 
+            class="text-base md:text-lg font-light tracking-[0.2em] text-[#eae7e1] hover:text-white hover:pl-1 transition-all duration-300"
+            @click="closeMainMenu"
+          >
+            Home
+          </RouterLink>
+          <RouterLink 
+            to="/works" 
+            class="text-base md:text-lg font-light tracking-[0.2em] text-[#eae7e1] hover:text-white hover:pl-1 transition-all duration-300"
+            @click="closeMainMenu"
+          >
+            Works
+          </RouterLink>
+          <RouterLink 
+            to="/about" 
+            class="text-base md:text-lg font-light tracking-[0.2em] text-[#eae7e1] hover:text-white hover:pl-1 transition-all duration-300"
+            @click="closeMainMenu"
+          >
+            About
+          </RouterLink>
+          <RouterLink 
+            to="/contact" 
+            class="text-base md:text-lg font-light tracking-[0.2em] text-[#eae7e1] hover:text-white hover:pl-1 transition-all duration-300"
+            @click="closeMainMenu"
+          >
+            Contact
+          </RouterLink>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -152,5 +208,23 @@ html, body {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.menu-fade-enter-active,
+.menu-fade-leave-active {
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.menu-fade-enter-from,
+.menu-fade-leave-to {
+  opacity: 0;
+  transform: scale(1.02);
+}
+
+/* Hide global elements when landing menu is open */
+body.landing-menu-open footer {
+  display: none !important;
+}
+body.landing-menu-open .md\:hidden.fixed.bottom-0 {
+  display: none !important;
 }
 </style>

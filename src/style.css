@@ -66,7 +66,7 @@
     --sidebar-ring: oklch(0.708 0 0);
   }
   .theme {
-    --font-sans: 'Geist Variable', sans-serif;
+    --font-sans: 'Avenir', 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-heading: var(--font-sans);
   }
   .dark {
@@ -105,6 +105,7 @@
   * {
     border-color: hsl(var(--border));
     outline-color: hsl(var(--ring) / 0.5);
+    font-family: 'Avenir', 'Avenir Next', -apple-system, BlinkMacSystemFont, sans-serif;
   }
   body {
     @apply bg-background text-foreground;

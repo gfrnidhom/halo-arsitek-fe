@@ -15,12 +15,19 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: '/projects',
-      name: 'projects',
-      component: () => import('../views/ProjectsView.vue')
+      path: '/works',
+      name: 'works',
+      component: () => import('../views/WorksView.vue')
     },
     {
-      path: '/projects/:slug',
+      path: '/project',
+      alias: ['/projects'],
+      name: 'project-grid',
+      component: () => import('../views/ProjectGridView.vue')
+    },
+    {
+      path: '/works/:slug',
+      alias: ['/project/:slug'],
       name: 'project-detail',
       component: () => import('../views/ProjectDetailView.vue')
     },

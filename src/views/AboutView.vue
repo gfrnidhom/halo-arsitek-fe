@@ -58,8 +58,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="w-full h-full overflow-y-auto custom-scrollbar relative overflow-x-hidden">
-    <div class="w-full max-w-4xl mx-auto flex flex-col px-8 md:px-12 pt-32 pb-32 relative">
+  <div class="w-full h-full overflow-y-auto custom-scrollbar relative overflow-x-hidden flex justify-center">
+    <div class="w-full h-full max-w-[1280px] mx-auto flex flex-col px-8 sm:px-12 md:px-16 pt-[88px] pb-[88px] relative">
       
       <div v-if="loading" class="flex items-center justify-center h-64">
         <span class="text-sm tracking-widest text-gray-400 animate-pulse uppercase">Loading...</span>

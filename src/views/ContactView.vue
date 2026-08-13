@@ -51,8 +51,9 @@ const submit = async () => {
 </script>
 
 <template>
-  <div class="w-full min-h-[100dvh] flex flex-col justify-center px-6 md:px-12 lg:px-24 xl:px-32 py-24 md:py-12 relative">
-    <div class="w-full max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center mt-12 md:mt-0">
+  <div class="w-full min-h-[100dvh] flex flex-col items-center justify-center relative">
+    <div class="w-full max-w-[1280px] w-full px-8 sm:px-12 md:px-16 pt-[88px] pb-[88px]">
+      <div class="w-full max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center mt-12 md:mt-0">
       
       <!-- Left Column: Details + Image -->
       <div class="flex flex-col space-y-8 md:space-y-16">
@@ -151,6 +152,7 @@ const submit = async () => {
         </form>
       </div>
 
+    </div>
     </div>
   </div>
 </template>

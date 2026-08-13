@@ -62,7 +62,7 @@ onMounted(async () => {
       <div class="w-full h-full relative overflow-hidden" ref="emblaRef">
         <div class="flex h-full">
           <div class="flex-[0_0_100%] min-w-0 h-full relative" v-for="project in projects" :key="project.id">
-            <RouterLink :to="`/projects/${project.slug || project.id}`" class="relative w-full h-full block cursor-pointer">
+            <RouterLink :to="`/project/${project.slug || project.id}`" class="relative w-full h-full block cursor-pointer">
               <img 
                 :src="project.cover_image" 
                 :alt="project.title"
