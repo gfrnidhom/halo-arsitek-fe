@@ -8,23 +8,33 @@ const settings = ref<any>(null)
 const isMainMenuOpen = ref(false)
 const mainScrollRef = ref<HTMLElement | null>(null)
 
+const isLightboxOpen = ref(false)
+
+const handleLightboxToggle = (e: any) => {
+  isLightboxOpen.value = !!e.detail?.isOpen
+}
+
 // Compute whether the current view has a dark background
 const isDarkPage = computed(() => {
   if (isMainMenuOpen.value) return true
   const path = route.path
   const name = String(route.name || '')
   if (path === '/' || name === 'landing') return true
-  if (name === 'project-detail' || path.startsWith('/project/') || path.startsWith('/works/')) return true
+  if (name === 'project-detail' || path.startsWith('/project/') || path.startsWith('/works/')) {
+    return isLightboxOpen.value
+  }
   if (path === '/contact' || name === 'contact') return true
   return false
 })
 
-// Hide navbar toggle on project detail page
+// Hide navbar toggle on project detail slide mode (visible on grid overview)
 const isNavbarToggleVisible = computed(() => {
   if (isMainMenuOpen.value) return true
   const path = route.path
   const name = String(route.name || '')
-  if (name === 'project-detail' || path.startsWith('/project/') || path.startsWith('/works/')) return false
+  if (name === 'project-detail' || path.startsWith('/project/') || path.startsWith('/works/')) {
+    return !isLightboxOpen.value
+  }
   return true
 })
 
@@ -73,7 +83,7 @@ const currentBreadcrumb = computed(() => {
       middle: 'Works',
       middlePath: '/project',
       current: title,
-      isDark: true
+      isDark: isLightboxOpen.value
     }
   }
   
@@ -120,6 +130,31 @@ const currentBreadcrumb = computed(() => {
   return null
 })
 
+const isScrolled = ref(false)
+const isAtBottom = ref(false)
+
+const handleScroll = () => {
+  if (mainScrollRef.value) {
+    const { scrollTop, scrollHeight, clientHeight } = mainScrollRef.value
+    isScrolled.value = scrollTop > 20
+    // Reliable threshold so footer always appears when scrolled near or to the bottom
+    isAtBottom.value = scrollTop + clientHeight >= scrollHeight - 180
+  }
+}
+
+const isScrollablePage = computed(() => {
+  const path = route.path
+  const name = String(route.name || '')
+  return path === '/about' || name === 'about' || 
+         path === '/news' || name === 'news' || 
+         name === 'news-detail' || path.startsWith('/news/')
+})
+
+const isFooterVisible = computed(() => {
+  if (!isScrollablePage.value) return true
+  return !isScrolled.value || isAtBottom.value
+})
+
 onMounted(async () => {
   try {
     const res = await getSettings()
@@ -130,12 +165,21 @@ onMounted(async () => {
     console.error('Failed to load settings', error)
   }
   
+  if (mainScrollRef.value) {
+    mainScrollRef.value.addEventListener('scroll', handleScroll, { passive: true })
+  }
+  
   // Listen for open-main-menu events from views (e.g. LandingView)
   window.addEventListener('open-main-menu', openMainMenu)
+  window.addEventListener('project-lightbox-toggle', handleLightboxToggle)
 })
 
 onUnmounted(() => {
+  if (mainScrollRef.value) {
+    mainScrollRef.value.removeEventListener('scroll', handleScroll)
+  }
   window.removeEventListener('open-main-menu', openMainMenu)
+  window.removeEventListener('project-lightbox-toggle', handleLightboxToggle)
   document.body.classList.remove('landing-menu-open')
 })
 
@@ -144,6 +188,9 @@ watch(() => route.path, () => {
   if (mainScrollRef.value) {
     mainScrollRef.value.scrollTop = 0
   }
+  isScrolled.value = false
+  isAtBottom.value = false
+  isLightboxOpen.value = false
   closeMainMenu()
 })
 
@@ -168,51 +215,69 @@ const toggleMainMenu = () => {
 
 <template>
   <div class="min-h-screen bg-[#f3f3f3] relative overflow-hidden font-sans text-gray-800 flex flex-col">
-    <!-- Global UI Overlay Container (Constrained to 1280px) -->
-    <div class="fixed inset-0 pointer-events-none z-50 flex justify-center">
-      <div class="w-full h-full max-w-[1280px] relative px-8 sm:px-12 md:px-16 pointer-events-none">
-        
-        <!-- Top Left Logo & Fixed Breadcrumb -->
-        <header class="absolute top-6 md:top-8 lg:top-10 left-8 sm:left-12 md:left-16 pointer-events-auto transition-colors duration-500 flex flex-col items-start">
-          <RouterLink to="/" class="hover:opacity-70 transition-opacity block header-logo-link" @click="closeMainMenu">
-            <img 
-              :src="isDarkPage ? '/images/logo-white.png' : '/images/logo-black.png'" 
-              :alt="settings?.site_name || 'HALO ARSITEK'"
-              :class="['h-6 md:h-8 w-auto object-contain transition-all duration-500', isDarkPage ? 'drop-shadow-md' : '']"
-            />
-          </RouterLink>
+    
+    <!-- Top Header Navigation Bar (Fixed with smooth scroll backdrop blur, completely borderless and shadowless) -->
+    <header 
+      class="fixed top-0 left-0 right-0 z-[60] transition-all duration-300 pointer-events-none flex justify-center"
+      :class="[
+        isScrolled && !isLightboxOpen
+          ? (isDarkPage 
+              ? 'bg-[#181818]/90 backdrop-blur-md py-3.5 md:py-4' 
+              : 'bg-white/90 backdrop-blur-md py-3.5 md:py-4')
+          : 'bg-transparent py-6 md:py-8 lg:py-10'
+      ]"
+    >
+      <div class="w-full max-w-[1280px] px-8 sm:px-12 md:px-16 flex flex-col items-start pointer-events-none">
+        <RouterLink to="/" class="hover:opacity-70 transition-opacity block header-logo-link pointer-events-auto" @click="closeMainMenu">
+          <img 
+            :src="isDarkPage ? '/images/logo-white.png' : '/images/logo-black.png'" 
+            :alt="settings?.site_name || 'HALO ARSITEK'"
+            :class="['h-6 md:h-8 w-auto object-contain transition-all duration-500', isDarkPage ? 'drop-shadow-md' : '']"
+          />
+        </RouterLink>
 
-          <!-- Fixed Breadcrumb (never moves when scrolling) -->
-          <div 
-            v-if="currentBreadcrumb && !isMainMenuOpen" 
-            class="mt-1 md:mt-1.5 flex items-center text-xs md:text-sm font-light tracking-wide select-none transition-colors duration-500"
+        <!-- Fixed Breadcrumb -->
+        <div 
+          v-if="currentBreadcrumb && !isMainMenuOpen && !isLightboxOpen" 
+          class="mt-1 md:mt-1.5 flex items-center text-xs md:text-sm font-light tracking-wide select-none transition-colors duration-500 pointer-events-auto"
+        >
+          <RouterLink 
+            :to="currentBreadcrumb.parentPath" 
+            :class="[currentBreadcrumb.isDark ? 'text-white/60 hover:text-white' : 'text-gray-400 hover:text-gray-900', 'transition-colors pointer-events-auto']"
           >
-            <RouterLink 
-              :to="currentBreadcrumb.parentPath" 
-              :class="[currentBreadcrumb.isDark ? 'text-white/60 hover:text-white' : 'text-gray-400 hover:text-gray-900', 'transition-colors']"
-            >
-              {{ currentBreadcrumb.parent }}
-            </RouterLink>
-            
-            <template v-if="currentBreadcrumb.middle">
-              <span :class="currentBreadcrumb.isDark ? 'text-white/60' : 'text-gray-400'">&nbsp;/</span>
-              <RouterLink 
-                :to="currentBreadcrumb.middlePath" 
-                :class="[currentBreadcrumb.isDark ? 'text-white/80 hover:text-white' : 'text-gray-600 hover:text-gray-900', 'transition-colors']"
-              >
-                &nbsp;{{ currentBreadcrumb.middle }}
-              </RouterLink>
-            </template>
-
+            {{ currentBreadcrumb.parent }}
+          </RouterLink>
+          
+          <template v-if="currentBreadcrumb.middle">
             <span :class="currentBreadcrumb.isDark ? 'text-white/60' : 'text-gray-400'">&nbsp;/</span>
-            <span :class="[currentBreadcrumb.isDark ? 'text-white font-medium drop-shadow-md' : 'text-gray-900 font-semibold', 'capitalize truncate max-w-[220px] sm:max-w-xs md:max-w-md']">
-              {{ currentBreadcrumb.current }}
-            </span>
-          </div>
-        </header>
+            <RouterLink 
+              :to="currentBreadcrumb.middlePath" 
+              :class="[currentBreadcrumb.isDark ? 'text-white/80 hover:text-white' : 'text-gray-600 hover:text-gray-900', 'transition-colors pointer-events-auto']"
+            >
+              &nbsp;{{ currentBreadcrumb.middle }}
+            </RouterLink>
+          </template>
 
-        <!-- Bottom Right Copyright (Footer) (Hidden on Mobile) -->
-        <footer v-if="route.path !== '/contact'" :class="['hidden md:flex absolute bottom-10 right-8 sm:right-12 md:right-16 pointer-events-auto flex-row items-center text-xs font-normal transition-colors duration-500', isDarkPage ? 'text-white drop-shadow-md opacity-90' : 'text-gray-900 opacity-90']">
+          <span :class="currentBreadcrumb.isDark ? 'text-white/60' : 'text-gray-400'">&nbsp;/</span>
+          <span :class="[currentBreadcrumb.isDark ? 'text-white font-medium drop-shadow-md' : 'text-gray-900 font-semibold', 'capitalize truncate max-w-[220px] sm:max-w-xs md:max-w-md']">
+            {{ currentBreadcrumb.current }}
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Global Floating Footer Overlay Container (Constrained to 1280px) -->
+    <div class="fixed inset-0 pointer-events-none z-30 flex justify-center">
+      <div class="w-full h-full max-w-[1280px] relative px-8 sm:px-12 md:px-16 pointer-events-none">
+        <!-- Bottom Right Copyright (Footer) (Hidden on Mobile, hidden mid-scroll on scrollable pages, appears when at top or reached bottom) -->
+        <footer 
+          v-if="route.path !== '/contact'" 
+          :class="[
+            'hidden md:flex absolute bottom-10 right-8 sm:right-12 md:right-16 pointer-events-auto flex-row items-center text-xs font-normal transition-all duration-500', 
+            isDarkPage ? 'text-white drop-shadow-md' : 'text-gray-900',
+            isFooterVisible ? 'opacity-90 translate-y-0' : 'opacity-0 pointer-events-none translate-y-2'
+          ]"
+        >
           <p class="tracking-wide">&copy; Halo Arsitek Studio.</p>
         </footer>
       </div>
@@ -222,8 +287,14 @@ const toggleMainMenu = () => {
     <div v-if="isNavbarToggleVisible" class="fixed top-1/2 -translate-y-1/2 left-6 md:left-8 z-50">
       <button 
         @click="toggleMainMenu"
-        class="hover:scale-105 active:scale-95 transition-all duration-300 p-1 cursor-pointer"
-        :class="[isDarkPage && !isMainMenuOpen ? 'text-white drop-shadow-md hover:text-white/80' : !isMainMenuOpen ? 'text-gray-900 hover:text-gray-600' : 'text-[#eae7e1]/70 hover:text-[#eae7e1]']"
+        class="hover:scale-105 active:scale-95 transition-all duration-300 p-2 rounded-full cursor-pointer flex items-center justify-center"
+        :class="[
+          isDarkPage && !isMainMenuOpen 
+            ? 'text-white drop-shadow-md hover:text-white/80' 
+            : !isMainMenuOpen 
+              ? (isScrolled ? 'text-gray-900 bg-white/90 backdrop-blur-md shadow-md hover:bg-white' : 'text-gray-900 hover:text-gray-600') 
+              : 'text-[#eae7e1]/70 hover:text-[#eae7e1]'
+        ]"
         aria-label="Toggle menu"
       >
         <svg 
@@ -233,7 +304,7 @@ const toggleMainMenu = () => {
           viewBox="0 0 24 24" 
           stroke-width="1.0" 
           stroke="currentColor" 
-          class="w-8 h-8 md:w-10 md:h-10"
+          class="w-7 h-7 md:w-8 md:h-8"
         >
           <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
         </svg>
@@ -244,7 +315,7 @@ const toggleMainMenu = () => {
           viewBox="0 0 24 24" 
           stroke-width="0.8" 
           stroke="currentColor" 
-          class="w-10 h-10 md:w-12 md:h-12"
+          class="w-8 h-8 md:w-10 md:h-10"
         >
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>

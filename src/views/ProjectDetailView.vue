@@ -8,7 +8,7 @@ const route = useRoute()
 const project = ref<any>(null)
 const loading = ref(true)
 
-// Lightbox state
+// Lightbox / Slide view state
 const isLightboxOpen = ref(false)
 const activeImageIndex = ref(0)
 
@@ -92,7 +92,7 @@ const createFallbackProject = (slug: string) => {
   project.value = {
     title: titleFormatted,
     location: 'Jakarta Selatan',
-    year: '2023',
+    year: '2025',
     description: 'Hunian keluarga bergaya tropis kontemporer. Courtyard terbuka di tengah rumah menghadirkan sirkulasi udara alami dan cahaya matahari yang optimal.',
     cover_image: defaultArchitecturalImages[0],
     gallery: defaultArchitecturalImages
@@ -102,10 +102,12 @@ const createFallbackProject = (slug: string) => {
 const openLightbox = (index: number) => {
   activeImageIndex.value = index
   isLightboxOpen.value = true
+  window.dispatchEvent(new CustomEvent('project-lightbox-toggle', { detail: { isOpen: true } }))
 }
 
 const closeLightbox = () => {
   isLightboxOpen.value = false
+  window.dispatchEvent(new CustomEvent('project-lightbox-toggle', { detail: { isOpen: false } }))
 }
 
 const nextImage = () => {
@@ -130,95 +132,164 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeyDown)
+  // Ensure lightbox state is cleared when leaving page
+  window.dispatchEvent(new CustomEvent('project-lightbox-toggle', { detail: { isOpen: false } }))
 })
 </script>
 
 <template>
-  <!-- Fullscreen slider container -->
-  <div class="w-full h-[100dvh] bg-black text-white font-sans relative box-border overflow-hidden select-none">
+  <div class="w-full min-h-[100dvh] lg:h-[100dvh] lg:overflow-hidden bg-white text-gray-900 font-sans relative flex justify-center">
     
     <!-- Loading State -->
-    <div v-if="loading" class="absolute inset-0 flex items-center justify-center z-20 bg-black">
-      <span class="text-xs md:text-sm tracking-widest text-white/50 animate-pulse uppercase">Loading project...</span>
+    <div v-if="loading" class="absolute inset-0 flex items-center justify-center z-20 bg-white">
+      <span class="text-xs md:text-sm tracking-widest text-gray-400 animate-pulse uppercase">Loading project...</span>
     </div>
 
-    <template v-else>
-      <!-- Main Background Image Slider -->
-      <transition-group name="fade" tag="div" class="absolute inset-0 z-0">
-        <div 
-          v-for="(img, idx) in galleryImages" 
-          :key="img"
-          v-show="activeImageIndex === idx"
-          class="absolute inset-0 w-full h-full"
-        >
-          <img 
-            :src="img" 
-            :alt="`${project?.title} slide ${idx + 1}`"
-            class="w-full h-full object-cover"
-          />
-          <!-- Optional subtle gradient overlay for text readability -->
-          <div class="absolute inset-0 bg-black/10 pointer-events-none"></div>
+    <!-- ================= PAGE 1: GRID OVERVIEW (detail-page-one.png) ================= -->
+    <div v-else class="w-full h-full max-w-[1280px] relative px-8 sm:px-12 md:px-16 box-border flex flex-col justify-between pt-24 md:pt-28 pb-8">
+      
+      <!-- Top Row: Project Title (Left) & Italic Description (Right) -->
+      <div class="w-full grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start z-10">
+        <!-- Left: Project Name & Year -->
+        <div class="md:col-span-6 flex flex-col">
+          <h1 class="text-xl sm:text-2xl md:text-3xl font-medium tracking-tight text-gray-900 leading-tight lowercase select-none">
+            {{ project?.title || 'rumah amerta' }}
+          </h1>
+          <p class="text-xs sm:text-sm text-gray-600 font-light tracking-wide mt-1 select-none">
+            {{ project?.location || 'Jakarta Selatan' }} / {{ project?.year || '2025' }}
+          </p>
         </div>
-      </transition-group>
 
-
-
-      <!-- Top Right Info -->
-      <div class="absolute top-8 md:top-12 right-8 md:right-16 text-right z-10 drop-shadow-md">
-        <div class="text-base md:text-xl lg:text-2xl font-normal lowercase tracking-wide mb-1">
-          {{ project?.title }}
-        </div>
-        <div class="text-xs md:text-sm font-light text-white/90 tracking-wide">
-          <span>{{ project?.location || 'Jakarta Selatan' }}</span>
-          <span class="mx-1">/</span>
-          <span>{{ project?.year || '2025' }}</span>
+        <!-- Right: Project Description (Italic, Right-aligned) -->
+        <div class="md:col-span-6 flex justify-end">
+          <p class="max-w-xs sm:max-w-sm md:max-w-md text-left md:text-right text-xs sm:text-sm italic font-light text-gray-700 leading-relaxed select-none">
+            {{ project?.description || 'Hunian keluarga bergaya tropis kontemporer. Courtyard terbuka di tengah rumah menghadirkan sirkulasi udara alami dan cahaya matahari yang optimal.' }}
+          </p>
         </div>
       </div>
 
-      <!-- Navigation Arrows -->
-      <button 
-        @click="prevImage" 
-        class="absolute left-4 sm:left-8 md:left-12 top-1/2 -translate-y-1/2 w-10 h-10 md:w-14 md:h-14 rounded-full border-[1.5px] border-white/60 text-white/80 hover:text-white hover:border-white flex items-center justify-center backdrop-blur-sm transition-all z-10 cursor-pointer group"
-        aria-label="Previous image"
-      >
-        <svg class="w-5 h-5 md:w-6 md:h-6 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-        </svg>
-      </button>
-
-      <button 
-        @click="nextImage" 
-        class="absolute right-4 sm:right-8 md:right-12 top-1/2 -translate-y-1/2 w-10 h-10 md:w-14 md:h-14 rounded-full border-[1.5px] border-white/60 text-white/80 hover:text-white hover:border-white flex items-center justify-center backdrop-blur-sm transition-all z-10 cursor-pointer group"
-        aria-label="Next image"
-      >
-        <svg class="w-5 h-5 md:w-6 md:h-6 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-        </svg>
-      </button>
-
-      <!-- Bottom Thumbnails -->
-      <div class="absolute bottom-6 md:bottom-8 left-0 right-0 w-full flex justify-center z-10 px-4 pointer-events-none">
-        <div class="flex items-center gap-2 md:gap-3 overflow-x-auto no-scrollbar max-w-[90vw] md:max-w-[80vw] lg:max-w-[1000px] pointer-events-auto py-3 px-3">
-          <button 
-            v-for="(img, idx) in galleryImages" 
-            :key="idx" 
-            @click="activeImageIndex = idx"
-            :class="[
-              'w-12 h-12 md:w-16 md:h-16 rounded-lg overflow-hidden border-2 transition-all duration-300 shrink-0 cursor-pointer',
-              activeImageIndex === idx ? 'border-white scale-110 shadow-xl opacity-100 z-10 ring-2 ring-white/30' : 'border-white/20 opacity-60 hover:opacity-100 hover:scale-105 hover:border-white/60'
-            ]"
-            :aria-label="`View image ${idx + 1}`"
+      <!-- Center: 10-Image Grid (5 Columns x 2 Rows) -->
+      <div class="w-full my-auto py-4 md:py-6 z-10 flex justify-center">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4 md:gap-5 w-full">
+          <div 
+            v-for="(img, idx) in galleryImages.slice(0, 10)" 
+            :key="idx"
+            @click="openLightbox(idx)"
+            class="aspect-[3/4] max-h-[28vh] lg:max-h-[32vh] rounded-xl md:rounded-2xl overflow-hidden bg-gray-100 relative group cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1"
           >
             <img 
               :src="img" 
-              class="w-full h-full object-cover pointer-events-none" 
-              alt="Thumbnail"
-              onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=800&auto=format&fit=crop'"
+              :alt="`${project?.title} - Image ${idx + 1}`"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+              onerror="this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop'"
             />
-          </button>
+            <!-- Subtle Hover Overlay -->
+            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+              <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-gray-900 shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                </svg>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </template>
+    </div>
+
+    <!-- ================= PAGE 2: FULLSCREEN SLIDE PREVIEW (detail-page-slide.png) ================= -->
+    <Transition name="lightbox-fade">
+      <div 
+        v-if="isLightboxOpen" 
+        class="fixed inset-0 z-40 bg-black text-white font-sans overflow-hidden select-none"
+      >
+        <!-- Top Right Info & Close Button -->
+        <div class="absolute top-6 md:top-8 lg:top-10 right-8 sm:right-12 md:right-16 text-right z-50 flex items-start gap-5 md:gap-6 drop-shadow-md pointer-events-auto">
+          <div class="flex flex-col items-end">
+            <div class="text-sm md:text-base lg:text-lg font-normal lowercase tracking-wide mb-0.5">
+              {{ project?.title }}
+            </div>
+            <div class="text-xs md:text-sm font-light text-white/80 tracking-wide">
+              <span>{{ project?.location || 'Jakarta Selatan' }}</span>
+              <span class="mx-1">/</span>
+              <span>{{ project?.year || '2025' }}</span>
+            </div>
+          </div>
+          
+          <!-- Close Button -->
+          <button 
+            @click.stop="closeLightbox"
+            class="w-8 h-8 md:w-10 md:h-10 rounded-full border border-white/40 text-white/80 hover:text-white hover:border-white flex items-center justify-center backdrop-blur-sm transition-all cursor-pointer hover:scale-105 mt-0.5 pointer-events-auto select-none"
+            aria-label="Close slider"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 pointer-events-none">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Main Background Image Slider -->
+        <transition-group name="fade" tag="div" class="absolute inset-0 z-0">
+          <div 
+            v-for="(img, idx) in galleryImages" 
+            :key="img"
+            v-show="activeImageIndex === idx"
+            class="absolute inset-0 w-full h-full"
+          >
+            <img 
+              :src="img" 
+              :alt="`${project?.title} slide ${idx + 1}`"
+              class="w-full h-full object-cover"
+            />
+            <div class="absolute inset-0 bg-black/15 pointer-events-none"></div>
+          </div>
+        </transition-group>
+
+        <!-- Navigation Arrows -->
+        <button 
+          @click="prevImage" 
+          class="absolute left-4 sm:left-8 md:left-12 top-1/2 -translate-y-1/2 w-10 h-10 md:w-14 md:h-14 rounded-full border-[1.5px] border-white/60 text-white/80 hover:text-white hover:border-white flex items-center justify-center backdrop-blur-sm transition-all z-20 cursor-pointer group"
+          aria-label="Previous image"
+        >
+          <svg class="w-5 h-5 md:w-6 md:h-6 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+          </svg>
+        </button>
+
+        <button 
+          @click="nextImage" 
+          class="absolute right-4 sm:right-8 md:right-12 top-1/2 -translate-y-1/2 w-10 h-10 md:w-14 md:h-14 rounded-full border-[1.5px] border-white/60 text-white/80 hover:text-white hover:border-white flex items-center justify-center backdrop-blur-sm transition-all z-20 cursor-pointer group"
+          aria-label="Next image"
+        >
+          <svg class="w-5 h-5 md:w-6 md:h-6 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+          </svg>
+        </button>
+
+        <!-- Bottom Thumbnails -->
+        <div class="absolute bottom-6 md:bottom-8 left-0 right-0 w-full flex justify-center z-20 px-4 pointer-events-none">
+          <div class="flex items-center gap-2 md:gap-3 overflow-x-auto no-scrollbar max-w-[90vw] md:max-w-[80vw] lg:max-w-[1000px] pointer-events-auto py-3 px-3">
+            <button 
+              v-for="(img, idx) in galleryImages" 
+              :key="idx" 
+              @click="activeImageIndex = idx"
+              :class="[
+                'w-12 h-12 md:w-16 md:h-16 rounded-lg overflow-hidden border-2 transition-all duration-300 shrink-0 cursor-pointer',
+                activeImageIndex === idx ? 'border-white scale-110 shadow-xl opacity-100 z-10 ring-2 ring-white/30' : 'border-white/20 opacity-60 hover:opacity-100 hover:scale-105 hover:border-white/60'
+              ]"
+              :aria-label="`View image ${idx + 1}`"
+            >
+              <img 
+                :src="img" 
+                class="w-full h-full object-cover pointer-events-none" 
+                alt="Thumbnail"
+                onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=800&auto=format&fit=crop'"
+              />
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
   </div>
 </template>
 
@@ -231,6 +302,17 @@ onUnmounted(() => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.lightbox-fade-enter-active,
+.lightbox-fade-leave-active {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.lightbox-fade-enter-from,
+.lightbox-fade-leave-to {
+  opacity: 0;
+  transform: scale(0.98);
 }
 
 /* Hide scrollbar for thumbnails */
