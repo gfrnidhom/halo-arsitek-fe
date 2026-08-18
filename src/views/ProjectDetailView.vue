@@ -28,7 +28,9 @@ const defaultArchitecturalImages = [
   'https://images.unsplash.com/photo-1600585152220-90363fe7e115?q=80&w=800&auto=format&fit=crop',
   'https://images.unsplash.com/photo-1600566752355-35792bedcfea?q=80&w=800&auto=format&fit=crop',
   'https://images.unsplash.com/photo-1600585154363-67eb9e2e2099?q=80&w=800&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=800&auto=format&fit=crop'
+  'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=800&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=800&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800&auto=format&fit=crop'
 ]
 
 const galleryImages = computed(() => {
@@ -57,14 +59,14 @@ const galleryImages = computed(() => {
 
   const cleanImgs = imgs.filter(Boolean)
 
-  // Fill up to 10 images to match the 5x2 grid layout
+  // Fill up to 12 images to match the 6x2 grid layout
   let fillIndex = 0
-  while (cleanImgs.length < 10) {
+  while (cleanImgs.length < 12) {
     cleanImgs.push(defaultArchitecturalImages[fillIndex % defaultArchitecturalImages.length])
     fillIndex++
   }
 
-  return cleanImgs.slice(0, 10)
+  return cleanImgs.slice(0, 12)
 })
 
 const fetchProjectData = async () => {
@@ -87,13 +89,13 @@ const fetchProjectData = async () => {
 const createFallbackProject = (slug: string) => {
   const titleFormatted = slug
     ? slug.split('-').join(' ')
-    : 'rumah amerta'
+    : 'apartemen minimalis bsd'
 
   project.value = {
     title: titleFormatted,
-    location: 'Jakarta Selatan',
-    year: '2025',
-    description: 'Hunian keluarga bergaya tropis kontemporer. Courtyard terbuka di tengah rumah menghadirkan sirkulasi udara alami dan cahaya matahari yang optimal.',
+    location: 'BSD City, Tangerang',
+    year: '2023',
+    description: 'Redesain total apartemen 2BR menjadi hunian minimalis bergaya Japandi. Furnitur built-in dan palette kayu-putih menciptakan kesan luas dan tenang.',
     cover_image: defaultArchitecturalImages[0],
     gallery: defaultArchitecturalImages
   }
@@ -146,36 +148,36 @@ onUnmounted(() => {
     </div>
 
     <!-- ================= PAGE 1: GRID OVERVIEW (detail-page-one.png) ================= -->
-    <div v-else class="w-full h-full max-w-[1280px] relative px-8 sm:px-12 md:px-16 box-border flex flex-col justify-between pt-24 md:pt-28 pb-8">
+    <div v-else class="w-full h-full max-w-[1280px] relative px-8 sm:px-12 md:px-16 box-border flex flex-col justify-between pt-28 md:pt-32 lg:pt-36 pb-12 md:pb-14">
       
       <!-- Top Row: Project Title (Left) & Italic Description (Right) -->
-      <div class="w-full grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start z-10">
+      <div class="w-full grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start z-10 mb-2 md:mb-4">
         <!-- Left: Project Name & Year -->
-        <div class="md:col-span-6 flex flex-col">
+        <div class="md:col-span-5 flex flex-col">
           <h1 class="text-xl sm:text-2xl md:text-3xl font-medium tracking-tight text-gray-900 leading-tight lowercase select-none">
-            {{ project?.title || 'rumah amerta' }}
+            {{ project?.title || 'apartemen minimalis bsd' }}
           </h1>
           <p class="text-xs sm:text-sm text-gray-600 font-light tracking-wide mt-1 select-none">
-            {{ project?.location || 'Jakarta Selatan' }} / {{ project?.year || '2025' }}
+            {{ project?.location || 'BSD City, Tangerang' }} / {{ project?.year || '2023' }}
           </p>
         </div>
 
         <!-- Right: Project Description (Italic, Right-aligned) -->
-        <div class="md:col-span-6 flex justify-end">
-          <p class="max-w-xs sm:max-w-sm md:max-w-md text-left md:text-right text-xs sm:text-sm italic font-light text-gray-700 leading-relaxed select-none">
-            {{ project?.description || 'Hunian keluarga bergaya tropis kontemporer. Courtyard terbuka di tengah rumah menghadirkan sirkulasi udara alami dan cahaya matahari yang optimal.' }}
+        <div class="md:col-span-7 flex justify-end">
+          <p class="max-w-xs sm:max-w-sm md:max-w-md text-left md:text-right text-xs sm:text-[13px] md:text-sm italic font-light text-gray-700 leading-relaxed select-none">
+            {{ project?.description || 'Redesain total apartemen 2BR menjadi hunian minimalis bergaya Japandi. Furnitur built-in dan palette kayu-putih menciptakan kesan luas dan tenang.' }}
           </p>
         </div>
       </div>
 
-      <!-- Center: 10-Image Grid (5 Columns x 2 Rows) -->
-      <div class="w-full my-auto py-4 md:py-6 z-10 flex justify-center">
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4 md:gap-5 w-full">
+      <!-- Center: 12-Image Grid (6 Columns x 2 Rows) -->
+      <div class="w-full my-auto py-2 z-10 flex justify-center">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5 sm:gap-3 md:gap-3.5 lg:gap-4 w-full">
           <div 
-            v-for="(img, idx) in galleryImages.slice(0, 10)" 
+            v-for="(img, idx) in galleryImages.slice(0, 12)" 
             :key="idx"
             @click="openLightbox(idx)"
-            class="aspect-[3/4] max-h-[28vh] lg:max-h-[32vh] rounded-xl md:rounded-2xl overflow-hidden bg-gray-100 relative group cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1"
+            class="aspect-[3/4] max-h-[20vh] sm:max-h-[22vh] md:max-h-[24vh] lg:max-h-[26vh] rounded-lg md:rounded-xl overflow-hidden bg-gray-100 relative group cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1"
           >
             <img 
               :src="img" 
@@ -185,8 +187,8 @@ onUnmounted(() => {
             />
             <!-- Subtle Hover Overlay -->
             <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
-              <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-gray-900 shadow-md">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+              <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-gray-900 shadow-md">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 md:w-4 md:h-4">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
                 </svg>
               </div>
@@ -194,6 +196,9 @@ onUnmounted(() => {
           </div>
         </div>
       </div>
+
+      <!-- Bottom space to ensure footer never overlaps the bottom-right image -->
+      <div class="hidden lg:block h-6"></div>
     </div>
 
     <!-- ================= PAGE 2: FULLSCREEN SLIDE PREVIEW (detail-page-slide.png) ================= -->
@@ -244,23 +249,23 @@ onUnmounted(() => {
           </div>
         </transition-group>
 
-        <!-- Navigation Arrows -->
+        <!-- Navigation Arrows (Pill Shaped Capsule) -->
         <button 
           @click="prevImage" 
-          class="absolute left-4 sm:left-8 md:left-12 top-1/2 -translate-y-1/2 w-10 h-10 md:w-14 md:h-14 rounded-full border-[1.5px] border-white/60 text-white/80 hover:text-white hover:border-white flex items-center justify-center backdrop-blur-sm transition-all z-20 cursor-pointer group"
+          class="absolute left-4 sm:left-8 md:left-12 top-1/2 -translate-y-1/2 w-12 sm:w-14 md:w-16 h-7 sm:h-8 md:h-9 rounded-full border-[1.5px] border-white/60 text-white/90 hover:text-white hover:border-white flex items-center justify-center backdrop-blur-sm transition-all z-20 cursor-pointer group shadow-md"
           aria-label="Previous image"
         >
-          <svg class="w-5 h-5 md:w-6 md:h-6 transition-transform group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <svg class="w-5 sm:w-6 md:w-7 h-4 sm:h-5 transition-transform group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
           </svg>
         </button>
 
         <button 
           @click="nextImage" 
-          class="absolute right-4 sm:right-8 md:right-12 top-1/2 -translate-y-1/2 w-10 h-10 md:w-14 md:h-14 rounded-full border-[1.5px] border-white/60 text-white/80 hover:text-white hover:border-white flex items-center justify-center backdrop-blur-sm transition-all z-20 cursor-pointer group"
+          class="absolute right-4 sm:right-8 md:right-12 top-1/2 -translate-y-1/2 w-12 sm:w-14 md:w-16 h-7 sm:h-8 md:h-9 rounded-full border-[1.5px] border-white/60 text-white/90 hover:text-white hover:border-white flex items-center justify-center backdrop-blur-sm transition-all z-20 cursor-pointer group shadow-md"
           aria-label="Next image"
         >
-          <svg class="w-5 h-5 md:w-6 md:h-6 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <svg class="w-5 sm:w-6 md:w-7 h-4 sm:h-5 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
           </svg>
         </button>

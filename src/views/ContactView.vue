@@ -121,12 +121,12 @@ const submit = async () => {
       <!-- Bottom Row: Circular Badge (Left) and Logo (Right) -->
       <div class="w-full flex justify-between items-end pt-8 pb-4">
         <!-- Circular House Badge -->
-        <div class="w-14 h-14 sm:w-16 sm:h-16 select-none drop-shadow-md">
-          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full text-white">
-            <circle cx="50" cy="50" r="44" stroke="currentColor" stroke-width="7" />
-            <path d="M28 52L50 30L72 52V76H28V52Z" stroke="currentColor" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
-            <path d="M42 48V68M58 48V68M42 58H58" stroke="currentColor" stroke-width="5.5" stroke-linecap="round"/>
-          </svg>
+        <div class="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 select-none drop-shadow-md flex items-center justify-center">
+          <img 
+            src="/logo-halo-arsitek-white.png" 
+            alt="Halo Arsitek Emblem" 
+            class="w-full h-full object-contain"
+          />
         </div>
 
         <!-- Right Watermark / Logo -->
