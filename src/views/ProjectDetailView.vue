@@ -36,6 +36,8 @@ const galleryImages = computed(() => {
   
   if (project.value?.cover_image) {
     imgs.push(project.value.cover_image)
+  } else if (project.value?.image_url) {
+    imgs.push(project.value.image_url)
   }
   
   if (project.value?.images) {
@@ -158,6 +160,8 @@ onUnmounted(() => {
           <div class="absolute inset-0 bg-black/10 pointer-events-none"></div>
         </div>
       </transition-group>
+
+
 
       <!-- Top Right Info -->
       <div class="absolute top-8 md:top-12 right-8 md:right-16 text-right z-10 drop-shadow-md">

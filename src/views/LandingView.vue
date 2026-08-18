@@ -82,7 +82,7 @@ const get169Image = (url: string) => {
           <!-- Dark overlay to ensure logo is visible if needed, though mix-blend-difference handles it -->
           <div class="absolute inset-0 bg-black/10 z-10"></div>
           <img 
-            :src="get169Image(project.cover_image)" 
+            :src="get169Image(project.cover_image || project.image_url)" 
             :alt="project.title"
             class="w-full h-full object-cover"
             onerror="this.src='https://placehold.co/1920x1080/222222/999999?text=Project'"

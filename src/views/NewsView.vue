@@ -56,9 +56,10 @@ useIntersectionObserver(
 </script>
 
 <template>
-  <div class="w-full h-full overflow-y-auto custom-scrollbar">
-    <div class="w-full max-w-4xl mx-auto flex flex-col pt-32 px-8 pb-40">
-      <h1 class="text-sm tracking-[0.2em] uppercase text-gray-400 mb-12">News & Insights</h1>
+  <div class="w-full min-h-full bg-white relative flex flex-col items-center">
+    <div class="w-full max-w-[1280px] px-8 sm:px-12 md:px-16 pt-28 md:pt-36 pb-32 flex flex-col box-border">
+      
+      <h1 class="text-xs tracking-[0.2em] uppercase text-gray-400 mb-8 font-medium">News & Insights</h1>
       
       <!-- Loading State (Initial Shimmer) -->
       <div v-if="loading" class="w-full pb-40">
@@ -86,7 +87,7 @@ useIntersectionObserver(
           >
             <div class="w-full aspect-[4/3] bg-gray-200 overflow-hidden rounded-xl mb-5">
               <img 
-                :src="item.cover_image" 
+                :src="item.cover_image || item.image_url" 
                 :alt="item.title"
                 class="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 ease-in-out group-hover:scale-105"
                 onerror="this.src='https://images.unsplash.com/photo-1493809842364-78817add7ffb?q=80&w=600&auto=format&fit=crop'"

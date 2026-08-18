@@ -51,7 +51,14 @@ const router = createRouter({
       name: 'contact',
       component: () => import('../views/ContactView.vue')
     }
-  ]
+  ],
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { top: 0, left: 0 }
+    }
+  }
 })
 
 router.onError((error, to) => {

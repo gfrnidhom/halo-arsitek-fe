@@ -1,151 +1,160 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
-import { getTeam, getServices, getTestimonials, getSettings } from '@/api/services'
+import { ref, onMounted } from 'vue'
+import { RouterLink } from 'vue-router'
+import { getTeam, getSettings } from '@/api/services'
 import { useSEO } from '@/composables/useSEO'
 
 useSEO(() => ({
   title: 'About Us',
-  description: 'Mengenal lebih dekat tim HALO ARSITEK, profil, dan layanan kami.'
+  description: 'Mengenal lebih dekat visi, filosofi desain, dan tim arsitek HALO ARSITEK.'
 }))
 
-const team = ref<any[]>([])
-const services = ref<any[]>([])
-const testimonials = ref<any[]>([])
 const settings = ref<any>(null)
+const teamMembers = ref<any[]>([])
 const loading = ref(true)
 
-// Slider State
-const currentTestimonialSlide = ref(0)
-const isDesktop = ref(false)
+const defaultTeam = [
+  {
+    id: 'elang-mulya',
+    name: 'Elang Mulya',
+    role: 'Principal',
+    image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400&h=400&auto=format&fit=crop&crop=face',
+    bio: "As Principal Architect, Elang leads every project with a commitment to thoughtful design, ensuring each space reflects Halo Arsitek's design philosophy and quality standards."
+  },
+  {
+    id: 'mentari-murti',
+    name: 'Mentari Murti',
+    role: 'Studio Manager',
+    image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=400&h=400&auto=format&fit=crop&crop=face',
+    bio: "Since joining Halo Arsitek in 2020, Mentari has contributed to a wide range of residential and commercial projects. She holds a Master's degree in Architecture from Petra Christian University and is a licensed architect (IAI)."
+  }
+]
 
-const checkDesktop = () => {
-  isDesktop.value = window.innerWidth >= 768
+const getFallbackBio = (member: any, index: number) => {
+  const firstName = member.name?.split(' ')[0] || 'Our team member'
+  if (index === 0) {
+    return `As Principal Architect, ${firstName} leads every project with a commitment to thoughtful design, ensuring each space reflects Halo Arsitek's design philosophy and quality standards.`
+  }
+  if (index === 1) {
+    return `Since joining Halo Arsitek, ${firstName} has contributed to a wide range of residential and commercial projects. ${firstName} holds a Master's degree in Architecture and is dedicated to quality craftsmanship.`
+  }
+  return `${member.name} contributes to architectural excellence and thoughtful design at Halo Arsitek.`
 }
 
-const testimonialPages = computed(() => {
-  const itemsPerPage = isDesktop.value ? 2 : 1
-  return Math.ceil(testimonials.value.length / itemsPerPage)
-})
-
-watch(testimonialPages, (newPages) => {
-  if (currentTestimonialSlide.value >= newPages) {
-    currentTestimonialSlide.value = Math.max(0, newPages - 1)
-  }
-})
-
 onMounted(async () => {
-  checkDesktop()
-  window.addEventListener('resize', checkDesktop)
-
   try {
-    const [teamRes, servicesRes, testiRes, settingsRes] = await Promise.all([
-      getTeam(), getServices(), getTestimonials(), getSettings()
+    const [teamRes, settingsRes] = await Promise.all([
+      getTeam(),
+      getSettings()
     ])
-    if (teamRes.data?.success) team.value = teamRes.data.data
-    if (servicesRes.data?.success) services.value = servicesRes.data.data
-    if (testiRes.data?.success) testimonials.value = testiRes.data.data
-    if (settingsRes.data?.success) settings.value = settingsRes.data.data
+    if (teamRes.data?.success && teamRes.data.data?.length > 0) {
+      // Map API members with fallback bios and normalize field names
+      teamMembers.value = teamRes.data.data.map((member: any, index: number) => ({
+        id: member.id || `team-${index}`,
+        name: member.name || defaultTeam[index]?.name || 'Architect',
+        role: member.role || member.position || defaultTeam[index]?.role || 'Architect',
+        image: member.image || member.photo_url || defaultTeam[index]?.image || defaultTeam[0].image,
+        bio: member.bio || getFallbackBio(member, index)
+      }))
+    } else {
+      teamMembers.value = defaultTeam
+    }
+    if (settingsRes.data?.success) {
+      settings.value = settingsRes.data.data
+    }
   } catch (error) {
     console.error('Error fetching about data', error)
+    teamMembers.value = defaultTeam
   } finally {
     loading.value = false
   }
 })
-
-onUnmounted(() => {
-  window.removeEventListener('resize', checkDesktop)
-})
 </script>
 
 <template>
-  <div class="w-full h-full overflow-y-auto custom-scrollbar relative overflow-x-hidden flex justify-center">
-    <div class="w-full h-full max-w-[1280px] mx-auto flex flex-col px-8 sm:px-12 md:px-16 pt-[88px] pb-[88px] relative">
+  <div class="w-full min-h-full bg-white relative flex flex-col items-center">
+    
+    <!-- Top Container: White Section (Hero, Banner, Story) -->
+    <div class="w-full max-w-[1280px] px-8 sm:px-12 md:px-16 box-border flex flex-col">
       
-      <div v-if="loading" class="flex items-center justify-center h-64">
-        <span class="text-sm tracking-widest text-gray-400 animate-pulse uppercase">Loading...</span>
+      <!-- Hero Statement (Centered) -->
+      <div class="w-full max-w-4xl mx-auto text-center pt-28 md:pt-36 pb-12 md:pb-16 flex flex-col items-center">
+        <h1 class="text-2xl sm:text-3xl md:text-[32px] lg:text-[36px] font-normal text-gray-900 tracking-tight leading-snug mb-5 select-none">
+          Great Design Creates Great Stories.
+        </h1>
+        <p class="text-sm sm:text-base md:text-lg lg:text-[19px] font-light text-gray-800 leading-relaxed max-w-3xl select-none">
+          We believe architecture should do more than solve functional needs. It should shape experiences, foster connections, and create stories that last for generations.
+        </p>
       </div>
-      
-      <div v-else class="flex flex-col space-y-24">
-          
-          <!-- About & Services Row -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24">
-            <!-- About Description -->
-            <section>
-              <h1 class="text-xs tracking-[0.2em] uppercase text-gray-400 font-medium mb-6">About Us</h1>
-              <p class="text-lg md:text-xl font-light leading-relaxed text-gray-800">
-                {{ settings?.about_description || 'We believe architecture is more than just space. It is the silent language of form, light, and context merging to create harmony in human experience.' }}
-              </p>
-            </section>
-  
-            <!-- Services (Shortened) -->
-            <section v-if="services.length">
-              <h2 class="text-xs tracking-[0.2em] uppercase text-gray-400 mb-6 font-medium">Services</h2>
-              <div class="flex flex-col space-y-4">
-                <div v-for="svc in services" :key="svc.id" class="border-b border-gray-200 pb-3">
-                  <h3 class="text-sm font-medium text-gray-900">{{ svc.title }}</h3>
-                </div>
-              </div>
-            </section>
-          </div>
 
-        <!-- Team -->
-        <section v-if="team.length">
-          <h2 class="text-xs tracking-[0.2em] uppercase text-gray-400 mb-8 font-medium">Team</h2>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div v-for="member in team" :key="member.id" class="flex flex-col">
-              <div class="aspect-[3/4] bg-gray-200 mb-4 overflow-hidden rounded-xl">
+      <!-- Panoramic Team Banner Image -->
+      <div class="w-full aspect-[2.2/1] sm:aspect-[2.5/1] md:aspect-[2.8/1] overflow-hidden bg-gray-100 rounded-none mb-16 md:mb-24 shadow-sm">
+        <img 
+          src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1920&auto=format&fit=crop" 
+          alt="Halo Arsitek Team" 
+          class="w-full h-full object-cover object-center"
+          onerror="this.src='https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=1920&auto=format&fit=crop'"
+        />
+      </div>
+
+      <!-- Two-Column Narrative Section -->
+      <div class="w-full grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 items-start pb-20 md:pb-28">
+        <!-- Left: Founding & Mission -->
+        <div class="md:col-span-5 flex flex-col">
+          <p class="text-sm sm:text-base font-light text-gray-800 leading-relaxed select-none">
+            Founded in 2015, HALO ARSITEK is a Jakarta-based architecture studio dedicated to creating thoughtful and enduring spaces.
+          </p>
+        </div>
+        
+        <!-- Right: Belief & Philosophy -->
+        <div class="md:col-span-7 flex flex-col">
+          <p class="text-lg sm:text-xl md:text-2xl font-light text-gray-900 leading-relaxed select-none">
+            Guided by the belief that great design creates great stories, we create architecture that responds to its context, supports everyday life, and grows together with the people who inhabit it.
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Container: Warm Beige Section for Team (Full Width with background #f4f2ec) -->
+    <div class="w-full bg-[#f4f2ec] py-20 md:py-28 flex justify-center">
+      <div class="w-full max-w-[1280px] px-8 sm:px-12 md:px-16 box-border flex flex-col">
+        <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-14 md:gap-24">
+          
+          <div 
+            v-for="member in teamMembers" 
+            :key="member.id || member.name"
+            class="flex flex-col space-y-6"
+          >
+            <!-- Member Avatar + Name / Role -->
+            <div class="flex items-center gap-6">
+              <div class="w-24 h-24 sm:w-28 sm:h-28 shrink-0 bg-gray-200 overflow-hidden rounded-none shadow-sm">
                 <img 
                   :src="member.image" 
-                  :alt="member.name"
+                  :alt="member.name" 
                   class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
-                  onerror="this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face'"
+                  onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&h=400&fit=crop&crop=face'"
                 />
               </div>
-              <h3 class="text-sm font-medium text-gray-900">{{ member.name }}</h3>
-              <p class="text-xs text-gray-400 mt-1">{{ member.role }}</p>
-            </div>
-          </div>
-        </section>
-
-        <!-- Testimonials Slider -->
-        <section v-if="testimonials.length" class="overflow-hidden w-full">
-          <div class="flex justify-between items-end mb-8">
-            <h2 class="text-xs tracking-[0.2em] uppercase text-gray-400 font-medium">Testimonials</h2>
-            <!-- Indicators -->
-            <div class="flex space-x-2" v-if="testimonialPages > 1">
-              <button 
-                v-for="page in testimonialPages" 
-                :key="page"
-                @click="currentTestimonialSlide = page - 1"
-                class="h-2 rounded-full transition-all duration-300"
-                :class="currentTestimonialSlide === page - 1 ? 'bg-gray-800 w-4' : 'bg-gray-300 w-2'"
-                :aria-label="`Go to slide ${page}`"
-              ></button>
-            </div>
-          </div>
-          
-          <div class="relative w-full -mx-4">
-            <div 
-              class="flex transition-transform duration-500 ease-out" 
-              :style="{ transform: `translateX(-${currentTestimonialSlide * 100}%)` }"
-            >
-              <div 
-                v-for="testi in testimonials" 
-                :key="testi.id" 
-                class="w-full md:w-1/2 flex-shrink-0 px-4"
-              >
-                <div class="flex flex-col space-y-4">
-                  <p class="italic text-sm text-gray-600 leading-relaxed border-l-2 border-gray-200 pl-6">"{{ testi.quote }}"</p>
-                  <div class="pl-6">
-                    <p class="text-xs font-medium text-gray-900">{{ testi.name }}</p>
-                    <p class="text-[10px] uppercase tracking-wider text-gray-400 mt-1">{{ testi.role }}</p>
-                  </div>
-                </div>
+              <div class="flex flex-col">
+                <h3 class="text-base sm:text-lg font-normal text-gray-900 select-none">
+                  {{ member.name }}
+                </h3>
+                <p class="text-xs sm:text-sm text-gray-500 font-light mt-0.5 select-none">
+                  {{ member.role }}
+                </p>
               </div>
             </div>
+
+            <!-- Bio Description -->
+            <p class="text-xs sm:text-sm font-light text-gray-800 leading-relaxed select-none pr-4">
+              {{ member.bio }}
+            </p>
           </div>
-        </section>
+
+        </div>
       </div>
     </div>
+
   </div>
 </template>

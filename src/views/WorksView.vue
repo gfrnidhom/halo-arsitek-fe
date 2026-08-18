@@ -6,16 +6,10 @@ import { RouterLink } from 'vue-router'
   <div class="w-full h-[100dvh] overflow-hidden bg-white relative flex justify-center">
     <div class="w-full h-full max-w-[1280px] relative px-8 sm:px-12 md:px-16 box-border">
       
-      <!-- Top Row (Snaps to container edges, pushed down to clear global logo) -->
-      <div class="absolute top-[88px] left-8 sm:left-12 md:left-16 right-8 sm:right-12 md:right-16 flex flex-row justify-between items-start gap-8 z-20">
-        <!-- Left: Breadcrumbs -->
-        <div class="flex items-center text-xs md:text-sm font-light tracking-wide select-none">
-          <RouterLink to="/" class="text-gray-400 hover:text-gray-900 transition-colors">Home</RouterLink>
-          <span class="text-gray-800 font-normal ml-1">/Works</span>
-        </div>
-        
+      <!-- Top Row (Snaps to container edges, aligning with header) -->
+      <div class="absolute top-6 md:top-8 lg:top-10 left-8 sm:left-12 md:left-16 right-8 sm:right-12 md:right-16 flex flex-row justify-end items-start gap-8 z-20 pointer-events-none">
         <!-- Right: Studio Description -->
-        <div class="text-right text-[11px] md:text-[13px] font-normal leading-[1.6] text-[#111] tracking-wide select-none">
+        <div class="text-right text-[11px] md:text-[13px] font-normal leading-[1.6] text-[#111] tracking-wide select-none pointer-events-auto">
           HALO ARSITEK is a Jakarta-based architecture<br />
           studio designing residential and commercial<br />
           spaces with one belief at the core: Great Design<br />
