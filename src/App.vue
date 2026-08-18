@@ -19,6 +19,15 @@ const isDarkPage = computed(() => {
   return false
 })
 
+// Hide navbar toggle on project detail page
+const isNavbarToggleVisible = computed(() => {
+  if (isMainMenuOpen.value) return true
+  const path = route.path
+  const name = String(route.name || '')
+  if (name === 'project-detail' || path.startsWith('/project/') || path.startsWith('/works/')) return false
+  return true
+})
+
 // Check if a navigation link is active
 const isLinkActive = (path: string) => {
   if (path === '/') return route.path === '/'
@@ -202,19 +211,15 @@ const toggleMainMenu = () => {
           </div>
         </header>
 
-        <!-- Bottom Right Copyright & Socials (Footer) (Hidden on Mobile) -->
-        <footer v-if="route.path !== '/contact'" :class="['hidden md:flex absolute bottom-10 right-8 sm:right-12 md:right-16 pointer-events-auto flex-row items-center space-x-8 text-xs font-normal transition-colors duration-500', isDarkPage ? 'text-white drop-shadow-md opacity-90' : 'text-gray-900 opacity-90']">
-          <div v-if="settings?.social_media || settings?.social_instagram || settings?.social_facebook" class="flex space-x-4">
-            <a v-if="settings?.social_instagram || settings?.social_media?.instagram" :href="settings?.social_instagram || settings?.social_media?.instagram" target="_blank" class="hover:opacity-100 transition-opacity uppercase tracking-widest">Instagram</a>
-            <a v-if="settings?.social_facebook || settings?.social_media?.facebook" :href="settings?.social_facebook || settings?.social_media?.facebook" target="_blank" class="hover:opacity-100 transition-opacity uppercase tracking-widest">Facebook</a>
-          </div>
+        <!-- Bottom Right Copyright (Footer) (Hidden on Mobile) -->
+        <footer v-if="route.path !== '/contact'" :class="['hidden md:flex absolute bottom-10 right-8 sm:right-12 md:right-16 pointer-events-auto flex-row items-center text-xs font-normal transition-colors duration-500', isDarkPage ? 'text-white drop-shadow-md opacity-90' : 'text-gray-900 opacity-90']">
           <p class="tracking-wide">&copy; Halo Arsitek Studio.</p>
         </footer>
       </div>
     </div>
 
     <!-- Middle Left Hamburger Menu Toggle (Nav) -->
-    <div class="fixed top-1/2 -translate-y-1/2 left-6 md:left-8 z-50">
+    <div v-if="isNavbarToggleVisible" class="fixed top-1/2 -translate-y-1/2 left-6 md:left-8 z-50">
       <button 
         @click="toggleMainMenu"
         class="hover:scale-105 active:scale-95 transition-all duration-300 p-1 cursor-pointer"

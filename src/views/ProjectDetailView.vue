@@ -197,20 +197,21 @@ onUnmounted(() => {
       </button>
 
       <!-- Bottom Thumbnails -->
-      <div class="absolute bottom-6 md:bottom-10 left-0 right-0 w-full flex justify-center z-10 px-4 pointer-events-none">
-        <div class="flex gap-2 md:gap-3 overflow-x-auto no-scrollbar max-w-[90vw] md:max-w-[80vw] lg:max-w-[1000px] pointer-events-auto pb-2 px-2">
+      <div class="absolute bottom-6 md:bottom-8 left-0 right-0 w-full flex justify-center z-10 px-4 pointer-events-none">
+        <div class="flex items-center gap-2 md:gap-3 overflow-x-auto no-scrollbar max-w-[90vw] md:max-w-[80vw] lg:max-w-[1000px] pointer-events-auto py-3 px-3">
           <button 
             v-for="(img, idx) in galleryImages" 
             :key="idx" 
             @click="activeImageIndex = idx"
             :class="[
-              'w-12 h-12 md:w-16 md:h-16 rounded-md overflow-hidden border-2 transition-all duration-300 shrink-0 cursor-pointer',
-              activeImageIndex === idx ? 'border-white scale-110 shadow-lg' : 'border-transparent opacity-50 hover:opacity-100 hover:scale-105'
+              'w-12 h-12 md:w-16 md:h-16 rounded-lg overflow-hidden border-2 transition-all duration-300 shrink-0 cursor-pointer',
+              activeImageIndex === idx ? 'border-white scale-110 shadow-xl opacity-100 z-10 ring-2 ring-white/30' : 'border-white/20 opacity-60 hover:opacity-100 hover:scale-105 hover:border-white/60'
             ]"
+            :aria-label="`View image ${idx + 1}`"
           >
             <img 
               :src="img" 
-              class="w-full h-full object-cover" 
+              class="w-full h-full object-cover pointer-events-none" 
               alt="Thumbnail"
               onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=800&auto=format&fit=crop'"
             />
