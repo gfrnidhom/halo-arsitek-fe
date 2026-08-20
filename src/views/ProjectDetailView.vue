@@ -2,6 +2,7 @@
 import { ref, onMounted, computed, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { getProjectBySlug } from '@/api/services'
+import { getImageUrl } from '@/config'
 import { useSEO } from '@/composables/useSEO'
 
 const route = useRoute()
@@ -33,13 +34,17 @@ const defaultArchitecturalImages = [
   'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800&auto=format&fit=crop'
 ]
 
+
+
 const galleryImages = computed(() => {
+  if (!project.value) return []
+  
   const imgs: string[] = []
   
   if (project.value?.cover_image) {
-    imgs.push(project.value.cover_image)
+    imgs.push(getImageUrl(project.value.cover_image))
   } else if (project.value?.image_url) {
-    imgs.push(project.value.image_url)
+    imgs.push(getImageUrl(project.value.image_url))
   }
   
   if (project.value?.images) {
@@ -47,26 +52,19 @@ const galleryImages = computed(() => {
       const parsed = typeof project.value.images === 'string' 
         ? JSON.parse(project.value.images) 
         : project.value.images
-      if (Array.isArray(parsed)) imgs.push(...parsed)
+      if (Array.isArray(parsed)) imgs.push(...parsed.map((img: string) => getImageUrl(img)))
     } catch (e) {
       console.warn('Failed to parse project.images', e)
     }
   }
   
   if (project.value?.gallery && Array.isArray(project.value.gallery)) {
-    imgs.push(...project.value.gallery)
+    imgs.push(...project.value.gallery.map((img: string) => getImageUrl(img)))
   }
-
+  
   const cleanImgs = imgs.filter(Boolean)
 
-  // Fill up to 12 images to match the 6x2 grid layout
-  let fillIndex = 0
-  while (cleanImgs.length < 12) {
-    cleanImgs.push(defaultArchitecturalImages[fillIndex % defaultArchitecturalImages.length])
-    fillIndex++
-  }
-
-  return cleanImgs.slice(0, 12)
+  return cleanImgs
 })
 
 const fetchProjectData = async () => {
@@ -140,7 +138,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="w-full min-h-[100dvh] lg:h-[100dvh] lg:overflow-hidden bg-white text-gray-900 font-sans relative flex justify-center">
+  <div class="w-full min-h-[100dvh] bg-white text-gray-900 font-sans relative flex justify-center pb-24 lg:pb-32">
     
     <!-- Loading State -->
     <div v-if="loading" class="absolute inset-0 flex items-center justify-center z-20 bg-white">
@@ -148,10 +146,10 @@ onUnmounted(() => {
     </div>
 
     <!-- ================= PAGE 1: GRID OVERVIEW (detail-page-one.png) ================= -->
-    <div v-else class="w-full h-full max-w-[1280px] relative px-8 sm:px-12 md:px-16 box-border flex flex-col justify-between pt-28 md:pt-32 lg:pt-36 pb-12 md:pb-14">
+    <div v-else class="w-full max-w-[1280px] relative px-8 sm:px-12 md:px-16 box-border flex flex-col pt-28 md:pt-32 lg:pt-36">
       
       <!-- Top Row: Project Title (Left) & Italic Description (Right) -->
-      <div class="w-full grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start z-10 mb-2 md:mb-4">
+      <div class="w-full grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start z-10 mb-8 md:mb-12">
         <!-- Left: Project Name & Year -->
         <div class="md:col-span-5 flex flex-col">
           <h1 class="text-xl sm:text-2xl md:text-3xl font-medium tracking-tight text-gray-900 leading-tight lowercase select-none">
@@ -170,20 +168,19 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <!-- Center: 12-Image Grid (6 Columns x 2 Rows) -->
-      <div class="w-full my-auto py-2 z-10 flex justify-center">
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5 sm:gap-3 md:gap-3.5 lg:gap-4 w-full">
+      <!-- Center: Image Grid -->
+      <div class="w-full z-10 flex justify-center">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6 md:gap-8 lg:gap-10 w-full">
           <div 
-            v-for="(img, idx) in galleryImages.slice(0, 12)" 
+            v-for="(img, idx) in galleryImages" 
             :key="idx"
             @click="openLightbox(idx)"
-            class="aspect-[3/4] max-h-[20vh] sm:max-h-[22vh] md:max-h-[24vh] lg:max-h-[26vh] rounded-lg md:rounded-xl overflow-hidden bg-gray-100 relative group cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1"
+            class="aspect-[3/4] rounded-lg md:rounded-xl overflow-hidden bg-gray-100 relative group cursor-pointer shadow-sm hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1"
           >
             <img 
               :src="img" 
               :alt="`${project?.title} - Image ${idx + 1}`"
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-              onerror="this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop'"
             />
             <!-- Subtle Hover Overlay -->
             <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
@@ -196,9 +193,6 @@ onUnmounted(() => {
           </div>
         </div>
       </div>
-
-      <!-- Bottom space to ensure footer never overlaps the bottom-right image -->
-      <div class="hidden lg:block h-6"></div>
     </div>
 
     <!-- ================= PAGE 2: FULLSCREEN SLIDE PREVIEW (detail-page-slide.png) ================= -->
@@ -287,7 +281,6 @@ onUnmounted(() => {
                 :src="img" 
                 class="w-full h-full object-cover pointer-events-none" 
                 alt="Thumbnail"
-                onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=800&auto=format&fit=crop'"
               />
             </button>
           </div>

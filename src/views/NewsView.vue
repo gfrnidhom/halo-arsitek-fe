@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { getNews } from '@/api/services'
+import { getImageUrl } from '@/config'
 import { useSEO } from '@/composables/useSEO'
 import { useIntersectionObserver } from '@vueuse/core'
 
@@ -16,6 +17,8 @@ const loadingMore = ref(false)
 const currentPage = ref(1)
 const lastPage = ref(1)
 const loadMoreRef = ref(null)
+
+
 
 const fetchNews = async (page = 1) => {
   try {
@@ -63,8 +66,8 @@ useIntersectionObserver(
       
       <!-- Loading State (Initial Shimmer) -->
       <div v-if="loading" class="w-full pb-40">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-          <div v-for="i in 6" :key="'skeleton-'+i" class="flex flex-col">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
+          <div v-for="i in 8" :key="'skeleton-'+i" class="flex flex-col">
             <div class="w-full aspect-[4/3] bg-gray-200 animate-pulse rounded-xl mb-5"></div>
             <div class="w-1/3 h-3 bg-gray-200 animate-pulse rounded mb-3"></div>
             <div class="w-3/4 h-5 bg-gray-200 animate-pulse rounded mb-2"></div>
@@ -78,7 +81,7 @@ useIntersectionObserver(
       </div>
       
       <div v-else class="flex flex-col pb-40">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
           <RouterLink 
             v-for="item in newsList" 
             :key="item.id" 
@@ -87,10 +90,9 @@ useIntersectionObserver(
           >
             <div class="w-full aspect-[4/3] bg-gray-200 overflow-hidden rounded-xl mb-5">
               <img 
-                :src="item.cover_image || item.image_url" 
+                :src="getImageUrl(item.cover_image || item.image_url)" 
                 :alt="item.title"
                 class="w-full h-full object-cover grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 ease-in-out group-hover:scale-105"
-                onerror="this.src='https://images.unsplash.com/photo-1493809842364-78817add7ffb?q=80&w=600&auto=format&fit=crop'"
               />
             </div>
             <div class="w-full flex flex-col pr-4">
@@ -104,7 +106,7 @@ useIntersectionObserver(
 
           <!-- Shimmer Skeleton for Infinite Scroll -->
           <template v-if="loadingMore">
-            <div v-for="i in 3" :key="'skeleton-more-'+i" class="flex flex-col">
+            <div v-for="i in 4" :key="'skeleton-more-'+i" class="flex flex-col">
               <div class="w-full aspect-[4/3] bg-gray-200 animate-pulse rounded-xl mb-5"></div>
               <div class="w-1/3 h-3 bg-gray-200 animate-pulse rounded mb-3"></div>
               <div class="w-3/4 h-5 bg-gray-200 animate-pulse rounded mb-2"></div>

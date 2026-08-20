@@ -3,6 +3,7 @@ import { ref, onMounted, watch } from 'vue'
 import api from '../api'
 import emblaCarouselVue from 'embla-carousel-vue'
 import Autoplay from 'embla-carousel-autoplay'
+import { getImageUrl } from '@/config'
 import { useSEO } from '../composables/useSEO'
 
 useSEO(() => ({
@@ -51,6 +52,8 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+
 </script>
 
 <template>
@@ -64,7 +67,7 @@ onMounted(async () => {
           <div class="flex-[0_0_100%] min-w-0 h-full relative" v-for="project in projects" :key="project.id">
             <RouterLink :to="`/project/${project.slug || project.id}`" class="relative w-full h-full block cursor-pointer">
               <img 
-                :src="project.cover_image" 
+                :src="getImageUrl(project.cover_image)" 
                 :alt="project.title"
                 class="w-full h-full object-cover"
                 onerror="this.src='https://placehold.co/1920x1080/eeeeee/999999?text=Project+Image'"

@@ -216,55 +216,7 @@ const toggleMainMenu = () => {
 <template>
   <div class="min-h-screen bg-[#f3f3f3] relative overflow-hidden font-sans text-gray-800 flex flex-col">
     
-    <!-- Top Header Navigation Bar (Fixed with smooth scroll backdrop blur, completely borderless and shadowless) -->
-    <header 
-      class="fixed top-0 left-0 right-0 z-[60] transition-all duration-300 pointer-events-none flex justify-center"
-      :class="[
-        isScrolled && !isLightboxOpen
-          ? (isDarkPage 
-              ? 'bg-[#181818]/90 backdrop-blur-md py-3.5 md:py-4' 
-              : 'bg-white/90 backdrop-blur-md py-3.5 md:py-4')
-          : 'bg-transparent py-6 md:py-8 lg:py-10'
-      ]"
-    >
-      <div class="w-full max-w-[1280px] px-8 sm:px-12 md:px-16 flex flex-col items-start pointer-events-none">
-        <RouterLink to="/" class="hover:opacity-70 transition-opacity block header-logo-link pointer-events-auto" @click="closeMainMenu">
-          <img 
-            :src="isDarkPage ? '/images/logo-white.png' : '/images/logo-black.png'" 
-            :alt="settings?.site_name || 'HALO ARSITEK'"
-            :class="['h-6 md:h-8 w-auto object-contain transition-all duration-500', isDarkPage ? 'drop-shadow-md' : '']"
-          />
-        </RouterLink>
 
-        <!-- Fixed Breadcrumb -->
-        <div 
-          v-if="currentBreadcrumb && !isMainMenuOpen && !isLightboxOpen" 
-          class="mt-1 md:mt-1.5 flex items-center text-xs md:text-sm font-light tracking-wide select-none transition-colors duration-500 pointer-events-auto"
-        >
-          <RouterLink 
-            :to="currentBreadcrumb.parentPath" 
-            :class="[currentBreadcrumb.isDark ? 'text-white/60 hover:text-white' : 'text-gray-400 hover:text-gray-900', 'transition-colors pointer-events-auto']"
-          >
-            {{ currentBreadcrumb.parent }}
-          </RouterLink>
-          
-          <template v-if="currentBreadcrumb.middle">
-            <span :class="currentBreadcrumb.isDark ? 'text-white/60' : 'text-gray-400'">&nbsp;/</span>
-            <RouterLink 
-              :to="currentBreadcrumb.middlePath" 
-              :class="[currentBreadcrumb.isDark ? 'text-white/80 hover:text-white' : 'text-gray-600 hover:text-gray-900', 'transition-colors pointer-events-auto']"
-            >
-              &nbsp;{{ currentBreadcrumb.middle }}
-            </RouterLink>
-          </template>
-
-          <span :class="currentBreadcrumb.isDark ? 'text-white/60' : 'text-gray-400'">&nbsp;/</span>
-          <span :class="[currentBreadcrumb.isDark ? 'text-white font-medium drop-shadow-md' : 'text-gray-900 font-semibold', 'capitalize truncate max-w-[220px] sm:max-w-xs md:max-w-md']">
-            {{ currentBreadcrumb.current }}
-          </span>
-        </div>
-      </div>
-    </header>
 
     <!-- Global Floating Footer Overlay Container (Constrained to 1280px) -->
     <div class="fixed inset-0 pointer-events-none z-30 flex justify-center">
@@ -327,6 +279,49 @@ const toggleMainMenu = () => {
       ref="mainScrollRef"
       class="w-full flex-1 h-[100dvh] overflow-y-auto overflow-x-hidden custom-scrollbar relative"
     >
+      <!-- Top Header Navigation Bar (Absolute so it scrolls with the page) -->
+      <header 
+        class="absolute top-0 left-0 right-0 z-[60] transition-all duration-300 pointer-events-none flex justify-center bg-transparent py-6 md:py-8 lg:py-10"
+      >
+        <div class="w-full max-w-[1280px] px-8 sm:px-12 md:px-16 flex flex-col items-start pointer-events-none">
+          <RouterLink to="/" class="hover:opacity-70 transition-opacity block header-logo-link pointer-events-auto" @click="closeMainMenu">
+            <img 
+              :src="isDarkPage ? '/images/logo-white.png' : '/images/logo-black.png'" 
+              :alt="settings?.site_name || 'HALO ARSITEK'"
+              :class="['h-6 md:h-8 w-auto object-contain transition-all duration-500', isDarkPage ? 'drop-shadow-md' : '']"
+            />
+          </RouterLink>
+
+          <!-- Fixed Breadcrumb -->
+          <div 
+            v-if="currentBreadcrumb && !isMainMenuOpen && !isLightboxOpen" 
+            class="mt-2 md:mt-3 lg:mt-4 flex items-center text-xs md:text-sm font-light tracking-wide select-none transition-colors duration-500 pointer-events-auto"
+          >
+            <RouterLink 
+              :to="currentBreadcrumb.parentPath" 
+              :class="[currentBreadcrumb.isDark ? 'text-white/60 hover:text-white' : 'text-gray-400 hover:text-gray-900', 'transition-colors pointer-events-auto']"
+            >
+              {{ currentBreadcrumb.parent }}
+            </RouterLink>
+            
+            <template v-if="currentBreadcrumb.middle">
+              <span :class="currentBreadcrumb.isDark ? 'text-white/60' : 'text-gray-400'">&nbsp;/</span>
+              <RouterLink 
+                :to="currentBreadcrumb.middlePath" 
+                :class="[currentBreadcrumb.isDark ? 'text-white/80 hover:text-white' : 'text-gray-600 hover:text-gray-900', 'transition-colors pointer-events-auto']"
+              >
+                &nbsp;{{ currentBreadcrumb.middle }}
+              </RouterLink>
+            </template>
+
+            <span :class="currentBreadcrumb.isDark ? 'text-white/60' : 'text-gray-400'">&nbsp;/</span>
+            <span :class="[currentBreadcrumb.isDark ? 'text-white font-medium drop-shadow-md' : 'text-gray-900 font-semibold', 'capitalize truncate max-w-[220px] sm:max-w-xs md:max-w-md']">
+              {{ currentBreadcrumb.current }}
+            </span>
+          </div>
+        </div>
+      </header>
+
       <RouterView v-slot="{ Component }">
         <transition name="page-fade" mode="out-in">
           <component :is="Component" :key="route.path" />

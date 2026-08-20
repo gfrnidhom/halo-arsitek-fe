@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { getProjects, getCategories } from '@/api/services'
 import { RouterLink } from 'vue-router'
+import { getImageUrl } from '@/config'
 import { useSEO } from '@/composables/useSEO'
 import { useIntersectionObserver } from '@vueuse/core'
 
@@ -21,6 +22,8 @@ const lastPage = ref(1)
 const loadMoreRef = ref(null)
 
 const hoveredProjectId = ref<number | string | null>(null)
+
+
 
 const fetchProjects = async (page = 1) => {
   try {
@@ -73,11 +76,11 @@ const filteredProjects = computed(() => {
 </script>
 
 <template>
-  <div class="w-full min-h-[100dvh] lg:h-[100dvh] lg:overflow-hidden bg-white relative flex justify-center">
-    <div class="w-full h-full max-w-[1280px] relative px-8 sm:px-12 md:px-16 box-border flex flex-col justify-between pt-[88px] pb-12 lg:pb-0">
+  <div class="w-full min-h-[100dvh] bg-white relative flex justify-center pb-24 lg:pb-32">
+    <div class="w-full max-w-[1280px] relative px-8 sm:px-12 md:px-16 box-border flex flex-col pt-6 md:pt-8 lg:pt-10">
       
       <!-- Top Row (Snaps to container edges, aligning with header) -->
-      <div class="w-full flex justify-end items-start gap-4 md:gap-8 z-20 pointer-events-none">
+      <div class="w-full flex justify-end items-start gap-4 md:gap-8 z-20 pointer-events-none shrink-0 mb-4 lg:mb-8 mt-[22px] md:mt-[34px] lg:mt-[38px]">
         <!-- Right: Studio Description -->
         <div class="max-w-[560px] md:max-w-[620px] text-left md:text-right text-xs md:text-sm lg:text-[14px] font-light leading-relaxed text-gray-700 select-none pointer-events-auto">
           HALO ARSITEK is a Jakarta-based architecture studio designing residential and commercial<br class="hidden md:inline" />
@@ -86,28 +89,28 @@ const filteredProjects = computed(() => {
       </div>
 
       <!-- Main Project Grid Screen -->
-      <div class="w-full my-auto py-8 lg:py-0 z-10 flex justify-center">
-        <div class="w-full max-w-[1280px] flex flex-col">
+      <div class="w-full flex flex-col z-10 pt-2">
+        <div class="w-full max-w-[1280px] flex flex-col pb-0">
           <!-- Loading State (Initial) -->
           <div v-if="loading" class="w-full">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
-              <div v-for="i in 8" :key="'skeleton-'+i" class="w-full aspect-[3/4] max-h-[30vh] lg:max-h-[34vh] bg-gray-200 animate-pulse rounded-2xl"></div>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-6 md:gap-8 lg:gap-10">
+              <div v-for="i in 10" :key="'skeleton-'+i" class="w-full aspect-[3/4] bg-gray-200 animate-pulse rounded-2xl"></div>
             </div>
           </div>
 
           <!-- Project Grid -->
           <div v-else-if="filteredProjects.length > 0" class="w-full flex flex-col">
             <div 
-              class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5"
+              class="grid grid-cols-2 md:grid-cols-5 gap-6 md:gap-8 lg:gap-10"
               @mouseleave="hoveredProjectId = null"
             >
               <RouterLink 
-                v-for="project in filteredProjects.slice(0, 8)" 
+                v-for="project in filteredProjects" 
                 :key="project.id" 
                 :to="`/project/${project.slug || project.id}`"
                 @mouseenter="hoveredProjectId = project.id"
                 :class="[
-                  'group relative overflow-hidden aspect-[3/4] max-h-[30vh] lg:max-h-[34vh] rounded-2xl bg-gray-900 transition-all duration-500 ease-out cursor-pointer block',
+                  'group relative overflow-hidden aspect-[3/4] rounded-2xl bg-gray-900 transition-all duration-500 ease-out cursor-pointer block',
                   hoveredProjectId !== null && hoveredProjectId !== project.id 
                     ? 'opacity-35 scale-[0.98] blur-[0.5px] grayscale-[20%]' 
                     : 'opacity-100 scale-100 shadow-md hover:shadow-2xl z-10'
@@ -115,10 +118,9 @@ const filteredProjects = computed(() => {
               >
                 <!-- Cover Image -->
                 <img 
-                  :src="project.cover_image || project.image_url" 
+                  :src="getImageUrl(project.cover_image || project.image_url)" 
                   :alt="project.title"
                   class="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-105"
-                  onerror="this.src='https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=600&auto=format&fit=crop'"
                 />
                 
                 <!-- Dark Gradient Overlay for text readability -->
@@ -134,7 +136,15 @@ const filteredProjects = computed(() => {
                   </p>
                 </div>
               </RouterLink>
+
+              <!-- Shimmer Skeleton for Infinite Scroll -->
+              <template v-if="loadingMore">
+                <div v-for="i in 5" :key="'skeleton-more-'+i" class="w-full aspect-[3/4] bg-gray-200 animate-pulse rounded-2xl"></div>
+              </template>
             </div>
+            
+            <!-- Infinite Scroll Sentinel -->
+            <div ref="loadMoreRef" class="w-full h-4 mt-2"></div>
           </div>
 
           <!-- Empty State -->
@@ -143,9 +153,6 @@ const filteredProjects = computed(() => {
           </div>
         </div>
       </div>
-
-      <!-- Bottom space to maintain perfect grid alignment -->
-      <div class="hidden lg:block h-6"></div>
     </div>
   </div>
 </template>

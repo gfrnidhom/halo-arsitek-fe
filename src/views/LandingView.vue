@@ -4,6 +4,7 @@ import api from '../api'
 import emblaCarouselVue from 'embla-carousel-vue'
 import Autoplay from 'embla-carousel-autoplay'
 import Fade from 'embla-carousel-fade'
+import { API_BASE_URL } from '@/config'
 import { useSEO } from '../composables/useSEO'
 
 useSEO(() => ({
@@ -64,7 +65,8 @@ const get169Image = (url: string) => {
       .replace(/w=\d+/, 'w=1920')
       .replace(/h=\d+/, 'h=1080')
   }
-  return url
+  if (url.startsWith('http') || url.startsWith('data:')) return url
+  return `${API_BASE_URL}${url.startsWith('/') ? '' : '/'}${url}`
 }
 </script>
 
@@ -93,7 +95,7 @@ const get169Image = (url: string) => {
       <!-- Bottom Left Project Name (Clickable to project details) -->
       <div class="absolute inset-0 pointer-events-none z-30 flex justify-center">
         <div class="w-full h-full max-w-[1280px] relative pointer-events-none">
-          <div v-if="projects.length > 0" class="absolute bottom-10 left-8 sm:left-12 md:left-16 pointer-events-auto">
+          <div v-if="projects.length > 0" class="absolute bottom-8 h-8 flex items-center left-8 sm:left-12 md:left-16 pointer-events-auto">
             <RouterLink 
               :to="`/project/${projects[selectedIndex]?.slug || projects[selectedIndex]?.id}`"
               class="text-white hover:opacity-75 transition-opacity text-xs md:text-sm font-light tracking-[0.15em] lowercase flex items-center gap-1.5 drop-shadow-md"

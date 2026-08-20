@@ -1,0 +1,7 @@
+export const API_BASE_URL = 'https://app.haloarsitek.com'
+
+export const getImageUrl = (url: string) => {
+  if (!url) return ''
+  if (url.startsWith('http') || url.startsWith('data:')) return url
+  return `${API_BASE_URL}${url.startsWith('/') ? '' : '/'}${url}`
+}
