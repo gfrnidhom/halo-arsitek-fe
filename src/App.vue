@@ -214,76 +214,68 @@ const toggleMainMenu = () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#f3f3f3] relative overflow-hidden font-sans text-gray-800 flex flex-col">
+  <div class="h-[100dvh] bg-[#f3f3f3] relative overflow-hidden font-sans text-gray-800 flex flex-col">
     
 
 
-    <!-- Global Floating Footer Overlay Container (Constrained to 1280px) -->
-    <div class="fixed inset-0 pointer-events-none z-30 flex justify-center">
-      <div class="w-full h-full max-w-[1280px] relative px-8 sm:px-12 md:px-16 pointer-events-none">
-        <!-- Bottom Right Copyright (Footer) (Hidden on Mobile, hidden mid-scroll on scrollable pages, appears when at top or reached bottom) -->
-        <footer 
-          v-if="route.path !== '/contact'" 
-          :class="[
-            'hidden md:flex absolute bottom-10 right-8 sm:right-12 md:right-16 pointer-events-auto flex-row items-center text-xs font-normal transition-all duration-500', 
-            isDarkPage ? 'text-white drop-shadow-md' : 'text-gray-900',
-            isFooterVisible ? 'opacity-90 translate-y-0' : 'opacity-0 pointer-events-none translate-y-2'
-          ]"
-        >
-          <p class="tracking-wide">&copy; Halo Arsitek Studio.</p>
-        </footer>
-      </div>
-    </div>
 
-    <!-- Middle Left Hamburger Menu Toggle (Nav) -->
-    <div v-if="isNavbarToggleVisible" class="fixed top-1/2 -translate-y-1/2 left-6 md:left-8 z-50">
-      <button 
-        @click="toggleMainMenu"
-        class="hover:scale-105 active:scale-95 transition-all duration-300 p-2 rounded-full cursor-pointer flex items-center justify-center"
-        :class="[
-          isDarkPage && !isMainMenuOpen 
-            ? 'text-white drop-shadow-md hover:text-white/80' 
-            : !isMainMenuOpen 
-              ? (isScrolled ? 'text-gray-900 bg-white/90 backdrop-blur-md shadow-md hover:bg-white' : 'text-gray-900 hover:text-gray-600') 
-              : 'text-[#eae7e1]/70 hover:text-[#eae7e1]'
-        ]"
-        aria-label="Toggle menu"
-      >
-        <svg 
-          v-if="!isMainMenuOpen" 
-          xmlns="http://www.w3.org/2000/svg" 
-          fill="none" 
-          viewBox="0 0 24 24" 
-          stroke-width="1.0" 
-          stroke="currentColor" 
-          class="w-7 h-7 md:w-8 md:h-8"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-        </svg>
-        <svg 
-          v-else 
-          xmlns="http://www.w3.org/2000/svg" 
-          fill="none" 
-          viewBox="0 0 24 24" 
-          stroke-width="0.8" 
-          stroke="currentColor" 
-          class="w-8 h-8 md:w-10 md:h-10"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-    </div>
+
+
 
     <!-- Main Content Area -->
     <main 
       ref="mainScrollRef"
-      class="w-full flex-1 h-[100dvh] overflow-y-auto overflow-x-hidden custom-scrollbar relative"
+      :class="['w-full flex-1 h-[100dvh] overflow-x-hidden custom-scrollbar relative', isLightboxOpen || isMainMenuOpen ? 'overflow-y-hidden' : 'overflow-y-auto']"
     >
-      <!-- Top Header Navigation Bar (Absolute so it scrolls with the page) -->
+      <!-- Hamburger Menu Toggle (Nav) -->
+      <div v-if="isNavbarToggleVisible" :class="[
+        isMainMenuOpen ? 'fixed' : 'absolute md:fixed',
+        'top-6 right-8 md:top-1/2 md:translate-y-[-50%] md:left-8 md:right-auto z-[70] transition-all duration-300'
+      ]">
+        <button 
+          @click="toggleMainMenu"
+          class="hover:scale-105 active:scale-95 transition-all duration-300 p-2 rounded-full cursor-pointer flex items-center justify-center"
+          :class="[
+            isDarkPage && !isMainMenuOpen 
+              ? 'text-white drop-shadow-md hover:text-white/80' 
+              : !isMainMenuOpen 
+                ? (isScrolled ? 'text-gray-900 bg-white/90 backdrop-blur-md shadow-md hover:bg-white' : 'text-gray-900 hover:text-gray-600') 
+                : 'text-[#eae7e1]/70 hover:text-[#eae7e1]'
+          ]"
+          aria-label="Toggle menu"
+        >
+          <svg 
+            v-if="!isMainMenuOpen" 
+            xmlns="http://www.w3.org/2000/svg" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke-width="1.0" 
+            stroke="currentColor" 
+            class="w-7 h-7 md:w-8 md:h-8"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+          <svg 
+            v-else 
+            xmlns="http://www.w3.org/2000/svg" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke-width="0.8" 
+            stroke="currentColor" 
+            class="w-8 h-8 md:w-10 md:h-10"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <!-- Top Header Navigation Bar (Scrolls with page, but fixed when overlays open) -->
       <header 
-        class="absolute top-0 left-0 right-0 z-[60] transition-all duration-300 pointer-events-none flex justify-center bg-transparent py-6 md:py-8 lg:py-10"
+        :class="[
+          (isLightboxOpen || isMainMenuOpen) ? 'fixed' : 'absolute',
+          'top-0 left-0 right-0 z-[60] transition-all duration-300 pointer-events-none bg-transparent py-6 md:py-8 lg:py-10'
+        ]"
       >
-        <div class="w-full max-w-[1280px] px-8 sm:px-12 md:px-16 flex flex-col items-start pointer-events-none">
+        <div class="w-full px-8 sm:px-12 md:px-24 lg:px-32 flex flex-col items-start pointer-events-none">
           <RouterLink to="/" class="hover:opacity-70 transition-opacity block header-logo-link pointer-events-auto" @click="closeMainMenu">
             <img 
               :src="isDarkPage ? '/images/logo-white.png' : '/images/logo-black.png'" 
@@ -322,23 +314,37 @@ const toggleMainMenu = () => {
         </div>
       </header>
 
-      <RouterView v-slot="{ Component }">
-        <transition name="page-fade" mode="out-in">
-          <component :is="Component" :key="route.path" />
-        </transition>
-      </RouterView>
-    </main>
+      <div class="w-full relative min-h-[100dvh]">
+        <RouterView v-slot="{ Component }">
+          <transition name="page-fade" mode="out-in">
+            <component :is="Component" :key="route.path" />
+          </transition>
+        </RouterView>
 
-    <!-- Mobile Minimal Copyright -->
-    <div v-if="route.path !== '/contact'" :class="['md:hidden fixed bottom-0 w-full z-30 pointer-events-none flex justify-end items-end pb-6 pr-6 pt-24', 
-      isDarkPage && !isMainMenuOpen ? '' : 'bg-gradient-to-t from-[#f3f3f3] via-[#f3f3f3]/80 to-transparent']">
-      <p :class="['text-[10px] font-light transition-colors duration-500', 
-        isDarkPage && !isMainMenuOpen 
-          ? 'text-white drop-shadow-md opacity-70' 
-          : 'text-gray-900 opacity-70']">
-        &copy; Halo Arsitek Studio.
-      </p>
-    </div>
+      <!-- Bottom Right Copyright (Desktop Footer) -->
+      <footer 
+        v-if="route.path !== '/contact'" 
+        :class="[
+          'hidden md:flex absolute bottom-10 right-8 sm:right-12 md:right-24 lg:right-32 pointer-events-auto flex-row items-center text-xs font-normal transition-all duration-500 z-30', 
+          isDarkPage ? 'text-white drop-shadow-md' : 'text-gray-900',
+          'opacity-90'
+        ]"
+      >
+        <p class="tracking-wide">&copy; Halo Arsitek Studio.</p>
+      </footer>
+
+        <!-- Mobile Minimal Copyright -->
+        <div v-if="route.path !== '/contact'" :class="['md:hidden absolute bottom-0 w-full z-30 pointer-events-none flex justify-end items-end pb-8 pr-8 sm:pr-12 pt-24', 
+          (isDarkPage && !isMainMenuOpen) || route.name === 'project-detail' ? '' : 'bg-gradient-to-t from-[#f3f3f3] via-[#f3f3f3]/80 to-transparent']">
+          <p :class="['text-[10px] font-light transition-colors duration-500', 
+            isDarkPage && !isMainMenuOpen 
+              ? 'text-white drop-shadow-md opacity-70' 
+              : 'text-gray-900 opacity-70']">
+            &copy; Halo Arsitek Studio.
+          </p>
+        </div>
+      </div>
+    </main>
 
     <!-- Global Menu Overlay -->
     <Transition name="menu-fade">
@@ -348,51 +354,51 @@ const toggleMainMenu = () => {
         style="background-image: radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, rgba(0, 0, 0, 0.12) 100%), url('data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\' opacity=\'0.055\'/%3E%3C/svg%3E');"
       >
         <!-- Center: Navigation Links -->
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col space-y-10 md:space-y-16 items-start text-left">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col space-y-10 md:space-y-12 items-center text-center">
           <RouterLink 
-            to="/" 
-            :class="['text-base md:text-lg font-light tracking-[0.2em] transition-all duration-300 flex items-center gap-3',
-              isLinkActive('/') ? 'text-white font-normal' : 'text-[#eae7e1]/80 hover:text-white hover:pl-1']"
+            to="/home" 
+            :class="['relative text-sm md:text-[15px] font-light tracking-[0.2em] transition-all duration-300 flex items-center justify-center',
+              isLinkActive('/home') ? 'text-white font-normal' : 'text-[#eae7e1]/80 hover:text-white hover:scale-105']"
             @click="closeMainMenu"
           >
             <span>Home</span>
-            <span v-if="isLinkActive('/')" class="w-1.5 h-1.5 rounded-full bg-white"></span>
+            <span v-if="isLinkActive('/home')" class="absolute -right-6 w-1.5 h-1.5 rounded-full bg-white"></span>
           </RouterLink>
           <RouterLink 
             to="/works" 
-            :class="['text-base md:text-lg font-light tracking-[0.2em] transition-all duration-300 flex items-center gap-3',
-              isLinkActive('/works') ? 'text-white font-normal' : 'text-[#eae7e1]/80 hover:text-white hover:pl-1']"
+            :class="['relative text-sm md:text-[15px] font-light tracking-[0.2em] transition-all duration-300 flex items-center justify-center',
+              isLinkActive('/works') ? 'text-white font-normal' : 'text-[#eae7e1]/80 hover:text-white hover:scale-105']"
             @click="closeMainMenu"
           >
             <span>Works</span>
-            <span v-if="isLinkActive('/works')" class="w-1.5 h-1.5 rounded-full bg-white"></span>
+            <span v-if="isLinkActive('/works')" class="absolute -right-6 w-1.5 h-1.5 rounded-full bg-white"></span>
           </RouterLink>
           <RouterLink 
             to="/about" 
-            :class="['text-base md:text-lg font-light tracking-[0.2em] transition-all duration-300 flex items-center gap-3',
-              isLinkActive('/about') ? 'text-white font-normal' : 'text-[#eae7e1]/80 hover:text-white hover:pl-1']"
+            :class="['relative text-sm md:text-[15px] font-light tracking-[0.2em] transition-all duration-300 flex items-center justify-center',
+              isLinkActive('/about') ? 'text-white font-normal' : 'text-[#eae7e1]/80 hover:text-white hover:scale-105']"
             @click="closeMainMenu"
           >
             <span>About</span>
-            <span v-if="isLinkActive('/about')" class="w-1.5 h-1.5 rounded-full bg-white"></span>
+            <span v-if="isLinkActive('/about')" class="absolute -right-6 w-1.5 h-1.5 rounded-full bg-white"></span>
           </RouterLink>
           <RouterLink 
             to="/news" 
-            :class="['text-base md:text-lg font-light tracking-[0.2em] transition-all duration-300 flex items-center gap-3',
-              isLinkActive('/news') ? 'text-white font-normal' : 'text-[#eae7e1]/80 hover:text-white hover:pl-1']"
+            :class="['relative text-sm md:text-[15px] font-light tracking-[0.2em] transition-all duration-300 flex items-center justify-center',
+              isLinkActive('/news') ? 'text-white font-normal' : 'text-[#eae7e1]/80 hover:text-white hover:scale-105']"
             @click="closeMainMenu"
           >
             <span>News</span>
-            <span v-if="isLinkActive('/news')" class="w-1.5 h-1.5 rounded-full bg-white"></span>
+            <span v-if="isLinkActive('/news')" class="absolute -right-6 w-1.5 h-1.5 rounded-full bg-white"></span>
           </RouterLink>
           <RouterLink 
             to="/contact" 
-            :class="['text-base md:text-lg font-light tracking-[0.2em] transition-all duration-300 flex items-center gap-3',
-              isLinkActive('/contact') ? 'text-white font-normal' : 'text-[#eae7e1]/80 hover:text-white hover:pl-1']"
+            :class="['relative text-sm md:text-[15px] font-light tracking-[0.2em] transition-all duration-300 flex items-center justify-center',
+              isLinkActive('/contact') ? 'text-white font-normal' : 'text-[#eae7e1]/80 hover:text-white hover:scale-105']"
             @click="closeMainMenu"
           >
             <span>Contact</span>
-            <span v-if="isLinkActive('/contact')" class="w-1.5 h-1.5 rounded-full bg-white"></span>
+            <span v-if="isLinkActive('/contact')" class="absolute -right-6 w-1.5 h-1.5 rounded-full bg-white"></span>
           </RouterLink>
         </div>
       </div>
@@ -422,40 +428,69 @@ html, body {
 }
 
 /* Transitions */
-.page-fade-enter-active,
-.page-fade-leave-active {
-  transition: opacity 0.4s ease, transform 0.4s ease;
+.page-fade-enter-active {
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.page-fade-enter-from,
+.page-fade-leave-active {
+  transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1), transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.page-fade-enter-from {
+  opacity: 0;
+  transform: translateY(12px);
+}
 .page-fade-leave-to {
   opacity: 0;
-  transform: translateY(8px);
+  transform: translateY(-12px);
 }
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
 }
 
-.menu-fade-enter-active,
+.menu-fade-enter-active {
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), filter 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
 .menu-fade-leave-active {
-  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), filter 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .menu-fade-enter-from,
 .menu-fade-leave-to {
   opacity: 0;
-  transform: scale(1.02);
+  transform: scale(1.03);
+  filter: blur(8px);
 }
+
+/* Premium Entry Animations */
+@keyframes fadeUpSmooth {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-up {
+  animation: fadeUpSmooth 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  opacity: 0;
+}
+.delay-75 { animation-delay: 75ms; }
+.delay-150 { animation-delay: 150ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-450 { animation-delay: 450ms; }
+.delay-600 { animation-delay: 600ms; }
 
 /* Hide global elements when landing menu is open */
 body.landing-menu-open footer {
   display: none !important;
 }
-body.landing-menu-open .md\:hidden.fixed.bottom-0 {
+body.landing-menu-open .md\:hidden.absolute.bottom-0 {
   display: none !important;
 }
 </style>

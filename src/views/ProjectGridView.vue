@@ -77,7 +77,7 @@ const filteredProjects = computed(() => {
 
 <template>
   <div class="w-full min-h-[100dvh] bg-white relative flex justify-center pb-24 lg:pb-32">
-    <div class="w-full max-w-[1280px] relative px-8 sm:px-12 md:px-16 box-border flex flex-col pt-6 md:pt-8 lg:pt-10">
+    <div class="w-full relative px-8 sm:px-12 md:px-24 lg:px-32 box-border flex flex-col pt-28 md:pt-32 lg:pt-36">
       
       <!-- Top Row (Snaps to container edges, aligning with header) -->
       <div class="w-full flex justify-end items-start gap-4 md:gap-8 z-20 pointer-events-none shrink-0 mb-4 lg:mb-8 mt-[22px] md:mt-[34px] lg:mt-[38px]">
@@ -90,7 +90,7 @@ const filteredProjects = computed(() => {
 
       <!-- Main Project Grid Screen -->
       <div class="w-full flex flex-col z-10 pt-2">
-        <div class="w-full max-w-[1280px] flex flex-col pb-0">
+        <div class="w-full flex flex-col pb-0">
           <!-- Loading State (Initial) -->
           <div v-if="loading" class="w-full">
             <div class="grid grid-cols-2 md:grid-cols-5 gap-6 md:gap-8 lg:gap-10">

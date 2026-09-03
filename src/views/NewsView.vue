@@ -60,12 +60,12 @@ useIntersectionObserver(
 
 <template>
   <div class="w-full min-h-full bg-white relative flex flex-col items-center">
-    <div class="w-full max-w-[1280px] px-8 sm:px-12 md:px-16 pt-28 md:pt-36 pb-32 flex flex-col box-border">
+    <div class="w-full px-8 sm:px-12 md:px-24 lg:px-32 pt-28 md:pt-36 pb-32 flex flex-col box-border">
       
-      <h1 class="text-xs tracking-[0.2em] uppercase text-gray-400 mb-8 font-medium">News & Insights</h1>
+      <h1 class="text-xs tracking-[0.2em] uppercase text-gray-400 mb-8 font-medium animate-fade-up">News & Insights</h1>
       
       <!-- Loading State (Initial Shimmer) -->
-      <div v-if="loading" class="w-full pb-40">
+      <div v-if="loading" class="w-full pb-40 animate-fade-up delay-150">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
           <div v-for="i in 8" :key="'skeleton-'+i" class="flex flex-col">
             <div class="w-full aspect-[4/3] bg-gray-200 animate-pulse rounded-xl mb-5"></div>
@@ -76,11 +76,11 @@ useIntersectionObserver(
         </div>
       </div>
 
-      <div v-else-if="!newsList.length" class="text-sm text-gray-400">
+      <div v-else-if="!newsList.length" class="text-sm text-gray-400 animate-fade-up delay-150">
         No articles found.
       </div>
       
-      <div v-else class="flex flex-col pb-40">
+      <div v-else class="flex flex-col pb-40 animate-fade-up delay-150">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
           <RouterLink 
             v-for="item in newsList" 

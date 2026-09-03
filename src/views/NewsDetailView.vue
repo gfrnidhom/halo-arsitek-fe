@@ -44,7 +44,7 @@ watch(() => route.params.slug, (newSlug) => {
 
 <template>
   <div class="w-full min-h-full bg-white relative flex flex-col items-center">
-    <div class="w-full max-w-[1280px] px-8 sm:px-12 md:px-16 pt-28 md:pt-36 pb-32 flex flex-col box-border">
+    <div class="w-full px-8 sm:px-12 md:px-24 lg:px-32 pt-28 md:pt-36 pb-32 flex flex-col box-border">
 
       <div class="w-full max-w-3xl mx-auto flex flex-col">
         <div v-if="loading" class="flex-1 flex items-center justify-center h-64">

@@ -56,10 +56,10 @@ const submit = async () => {
     class="w-full min-h-[100dvh] bg-[#555d50] text-[#eae7e1] relative flex justify-center selection:bg-white selection:text-[#555d50]"
     style="background-image: radial-gradient(circle, rgba(255, 255, 255, 0.02) 0%, rgba(0, 0, 0, 0.08) 100%), url('data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\' opacity=\'0.045\'/%3E%3C/svg%3E');"
   >
-    <div class="w-full h-full min-h-[100dvh] max-w-[1280px] relative px-8 sm:px-12 md:px-16 pt-24 md:pt-28 pb-16 flex flex-col justify-between box-border">
+    <div class="w-full h-full min-h-[100dvh] relative px-8 sm:px-12 md:px-24 lg:px-32 pt-24 md:pt-28 pb-16 flex flex-col justify-between box-border">
 
       <!-- Main Contact Grid (Exact Layout from UI/UX) -->
-      <div class="w-full my-auto py-12 md:py-16 flex flex-col space-y-12 md:space-y-16">
+      <div class="w-full my-auto py-12 md:py-16 flex flex-col space-y-12 md:space-y-16 animate-fade-up">
         
         <!-- Row 1: Office & Instagram -->
         <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start">

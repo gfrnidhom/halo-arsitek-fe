@@ -146,7 +146,7 @@ onUnmounted(() => {
     </div>
 
     <!-- ================= PAGE 1: GRID OVERVIEW (detail-page-one.png) ================= -->
-    <div v-else class="w-full max-w-[1280px] relative px-8 sm:px-12 md:px-16 box-border flex flex-col pt-28 md:pt-32 lg:pt-36">
+    <div v-else class="w-full relative px-8 sm:px-12 md:px-24 lg:px-32 box-border flex flex-col pt-28 md:pt-32 lg:pt-36">
       
       <!-- Top Row: Project Title (Left) & Italic Description (Right) -->
       <div class="w-full grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start z-10 mb-8 md:mb-12">
@@ -162,8 +162,7 @@ onUnmounted(() => {
 
         <!-- Right: Project Description (Italic, Right-aligned) -->
         <div class="md:col-span-7 flex justify-end">
-          <p class="max-w-xs sm:max-w-sm md:max-w-md text-left md:text-right text-xs sm:text-[13px] md:text-sm italic font-light text-gray-700 leading-relaxed select-none">
-            {{ project?.description || 'Redesain total apartemen 2BR menjadi hunian minimalis bergaya Japandi. Furnitur built-in dan palette kayu-putih menciptakan kesan luas dan tenang.' }}
+          <p class="max-w-xs sm:max-w-sm md:max-w-md text-left md:text-right text-xs sm:text-[13px] md:text-sm italic font-light text-gray-700 leading-relaxed select-none" v-html="project?.description || 'Redesain total apartemen 2BR menjadi hunian minimalis bergaya Japandi. Furnitur built-in dan palette kayu-putih menciptakan kesan luas dan tenang.'">
           </p>
         </div>
       </div>
@@ -202,7 +201,7 @@ onUnmounted(() => {
         class="fixed inset-0 z-40 bg-black text-white font-sans overflow-hidden select-none"
       >
         <!-- Top Right Info & Close Button -->
-        <div class="absolute top-6 md:top-8 lg:top-10 right-8 sm:right-12 md:right-16 text-right z-50 flex items-start gap-5 md:gap-6 drop-shadow-md pointer-events-auto">
+        <div class="absolute top-6 md:top-8 lg:top-10 right-8 sm:right-12 md:right-24 lg:right-32 text-right z-50 flex items-start gap-5 md:gap-6 drop-shadow-md pointer-events-auto">
           <div class="flex flex-col items-end">
             <div class="text-sm md:text-base lg:text-lg font-normal lowercase tracking-wide mb-0.5">
               {{ project?.title }}

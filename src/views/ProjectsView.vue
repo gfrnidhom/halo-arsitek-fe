@@ -120,7 +120,7 @@ const filteredProjects = computed(() => {
 
       <!-- Slide 2: Grid Screen (Scrollable, 4-column layout with hover focus effect) -->
       <div class="w-[100vw] h-full overflow-y-auto custom-scrollbar py-12 md:py-20 px-6 md:px-12 lg:px-16 box-border">
-        <div class="w-full max-w-6xl lg:max-w-7xl mx-auto flex flex-col">
+        <div class="w-full flex flex-col">
           <!-- Top Row for Slide 2 -->
           <div class="flex items-center space-x-2 text-xs md:text-sm font-light tracking-wide pb-6 border-b border-gray-200/55 select-none mb-6">
             <RouterLink to="/" class="text-gray-400 hover:text-gray-900 transition-colors">Home</RouterLink>

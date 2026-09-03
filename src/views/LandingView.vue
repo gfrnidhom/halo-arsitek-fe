@@ -93,9 +93,9 @@ const get169Image = (url: string) => {
       </div>
       
       <!-- Bottom Left Project Name (Clickable to project details) -->
-      <div class="absolute inset-0 pointer-events-none z-30 flex justify-center">
-        <div class="w-full h-full max-w-[1280px] relative pointer-events-none">
-          <div v-if="projects.length > 0" class="absolute bottom-8 h-8 flex items-center left-8 sm:left-12 md:left-16 pointer-events-auto">
+      <div class="absolute inset-0 pointer-events-none z-30">
+        <div class="w-full h-full relative pointer-events-none">
+          <div v-if="projects.length > 0" class="absolute bottom-8 md:bottom-10 flex items-center left-8 sm:left-12 md:left-24 lg:left-32 pointer-events-auto animate-fade-up delay-150">
             <RouterLink 
               :to="`/project/${projects[selectedIndex]?.slug || projects[selectedIndex]?.id}`"
               class="text-white hover:opacity-75 transition-opacity text-xs md:text-sm font-light tracking-[0.15em] lowercase flex items-center gap-1.5 drop-shadow-md"

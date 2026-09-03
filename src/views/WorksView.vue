@@ -4,23 +4,23 @@ import { RouterLink } from 'vue-router'
 
 <template>
   <div class="w-full h-[100dvh] overflow-hidden bg-white relative flex justify-center">
-    <div class="w-full h-full max-w-[1280px] relative px-8 sm:px-12 md:px-16 box-border">
+    <div class="w-full h-full relative px-8 sm:px-12 md:px-24 lg:px-32 box-border">
       
-      <!-- Top Row (Snaps to container edges, aligning with header) -->
-      <div class="absolute top-6 md:top-8 lg:top-10 left-8 sm:left-12 md:left-16 right-8 sm:right-12 md:right-16 flex flex-row justify-end items-start gap-8 z-20 pointer-events-none">
-        <!-- Right: Studio Description -->
-        <div class="text-right text-[11px] md:text-[13px] font-normal leading-[1.6] text-[#111] tracking-wide select-none pointer-events-auto">
-          HALO ARSITEK is a Jakarta-based architecture<br />
-          studio designing residential and commercial<br />
-          spaces with one belief at the core: Great Design<br />
+      <!-- Top Row (Pushed below the global header) -->
+      <div class="absolute top-28 md:top-32 lg:top-36 left-8 sm:left-12 md:left-24 lg:left-32 right-8 sm:right-12 md:right-24 lg:right-32 flex flex-row justify-start md:justify-end items-start gap-8 z-20 pointer-events-none">
+        <!-- Studio Description -->
+        <div class="text-left md:text-right text-[11px] md:text-[13px] font-normal leading-[1.6] text-[#111] tracking-wide select-none pointer-events-auto animate-fade-up">
+          HALO ARSITEK is a Jakarta-based architecture<br class="hidden md:inline" />
+          studio designing residential and commercial<br class="hidden md:inline" />
+          spaces with one belief at the core: Great Design<br class="hidden md:inline" />
           Creates Great Stories.
         </div>
       </div>
 
       <!-- Center: Hero Title & Link (Spans full width with padding to match edges perfectly) -->
-      <div class="absolute top-[48%] left-0 right-0 -translate-y-1/2 w-full px-8 sm:px-12 md:px-16 box-border flex flex-col">
+      <div class="absolute top-[48%] left-0 right-0 -translate-y-1/2 w-full px-8 sm:px-12 md:px-24 lg:px-32 box-border flex flex-col">
         <!-- Main Big Text -->
-        <h1 class="w-full text-[28px] sm:text-[36px] md:text-[4vw] lg:text-[4.2vw] font-light tracking-tight text-[#111] leading-[1.1] select-none whitespace-nowrap" style="text-align: justify; text-align-last: justify; text-justify: inter-word;">
+        <h1 class="w-full text-[32px] sm:text-[36px] md:text-[4vw] lg:text-[4.2vw] font-light tracking-tight text-[#111] leading-[1.2] md:leading-[1.1] select-none whitespace-normal md:whitespace-nowrap text-right">
           Creating Architecture That Tells Great Stories
         </h1>
         
