@@ -8,8 +8,7 @@ import { API_BASE_URL } from '@/config'
 import { useSEO } from '../composables/useSEO'
 
 useSEO(() => ({
-  title: 'Welcome',
-  description: 'HALO ARSITEK - Studio Arsitektur dan Desain Interior'
+  title: ''
 }))
 
 const projects = ref<any[]>([])

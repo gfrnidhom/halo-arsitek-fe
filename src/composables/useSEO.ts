@@ -1,13 +1,29 @@
-import { watchEffect } from 'vue'
+import { watchEffect, ref } from 'vue'
+import { getSettings } from '@/api/services'
+import { getImageUrl } from '@/config'
 
 export interface SEOOptions {
-  title: string
+  title?: string
   description?: string
   image?: string
 }
 
+const cachedSettings = ref<any>(null)
+let isFetchingSettings = false
+
 export function useSEO(getOptions: () => SEOOptions) {
-  const siteName = 'Halo Arsitek'
+  if (!cachedSettings.value && !isFetchingSettings) {
+    isFetchingSettings = true
+    getSettings().then(res => {
+      if (res.data && res.data.success) {
+        cachedSettings.value = res.data.data
+      }
+    }).catch(err => {
+      console.error('Failed to load SEO settings', err)
+    }).finally(() => {
+      isFetchingSettings = false
+    })
+  }
 
   const updateMetaTag = (name: string, content: string, isProperty = false) => {
     const attr = isProperty ? 'property' : 'name'
@@ -28,19 +44,33 @@ export function useSEO(getOptions: () => SEOOptions) {
 
   watchEffect(() => {
     const options = getOptions()
-    const fullTitle = `${options.title} | ${siteName}`
+    const settings = cachedSettings.value || {}
+    const siteName = settings.site_name || 'Halo Arsitek Studio.'
+    const fullTitle = options.title ? `${options.title} | ${siteName}` : siteName
 
     document.title = fullTitle
 
-    updateMetaTag('description', options.description || '')
-    updateMetaTag('og:description', options.description || '', true)
-    updateMetaTag('twitter:description', options.description || '')
+    const description = options.description || settings.seo_meta_description || settings.site_description || ''
+
+    updateMetaTag('description', description)
+    updateMetaTag('og:description', description, true)
+    updateMetaTag('twitter:description', description)
 
     updateMetaTag('og:title', fullTitle, true)
     updateMetaTag('twitter:title', fullTitle)
 
-    updateMetaTag('og:image', options.image || '', true)
-    updateMetaTag('twitter:image', options.image || '')
+    const defaultImage = settings.site_logo ? getImageUrl(settings.site_logo) : ''
+    const image = options.image || defaultImage
+
+    updateMetaTag('og:image', image, true)
+    updateMetaTag('twitter:image', image)
+    
+    if (settings.seo_meta_keywords) {
+      updateMetaTag('keywords', settings.seo_meta_keywords)
+    }
+    if (settings.seo_author) {
+      updateMetaTag('author', settings.seo_author)
+    }
 
     // Default open graph types
     updateMetaTag('og:type', 'website', true)
